@@ -4,33 +4,27 @@ Communication Configuration Window - COM Port Settings
 import customtkinter as ctk
 from tkinter import messagebox
 import serial.tools.list_ports
-from data.database import Database
+from data.database import Database, DBRecord
+from typing import Optional, List
+from decimal import Decimal
 
-class CommunicationConfigWindow(ctk.CTkToplevel):
-    def __init__(self, parent, username, role):
+class CommunicationConfigWindow(ctk.CTkFrame):
+    def __init__(self, parent: ctk.CTkFrame, username: str, role: str, is_embedded: bool = False) -> None:
         super().__init__(parent)
         
-        self.username = username
-        self.role = role
-        self.db = Database()
-        
-        self.title("Communication Configuration")
-        self.geometry("700x600")
+        self.username: str = username
+        self.role: str = role
+        self.db: Database = Database()
         
         self.center_window()
         self.create_widgets()
         self.load_config()
     
-    def center_window(self):
-        """Center the window on screen"""
-        self.update_idletasks()
-        width = 700
-        height = 600
-        x = (self.winfo_screenwidth() // 2) - (width // 2)
-        y = (self.winfo_screenheight() // 2) - (height // 2)
-        self.geometry(f'{width}x{height}+{x}+{y}')
+    def center_window(self) -> None:
+        """Placeholder for compatibility"""
+        pass
     
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         """Create communication config UI"""
         # Main container
         container = ctk.CTkFrame(self)
@@ -179,32 +173,32 @@ class CommunicationConfigWindow(ctk.CTkToplevel):
         )
         close_btn.pack(side="left", padx=10)
     
-    def get_available_ports(self):
+    def get_available_ports(self) -> List[str]:
         """Get list of available COM ports"""
         ports = serial.tools.list_ports.comports()
         if ports:
             return [port.device for port in ports]
         return ["No ports available"]
     
-    def refresh_ports(self):
+    def refresh_ports(self) -> None:
         """Refresh the list of available COM ports"""
-        ports = self.get_available_ports()
+        ports: List[str] = self.get_available_ports()
         self.port_combo.configure(values=ports)
         if ports and ports[0] != "No ports available":
             self.port_combo.set(ports[0])
         messagebox.showinfo("Refreshed", f"Found {len(ports)} port(s)")
     
-    def test_connection(self):
+    def test_connection(self) -> None:
         """Test the serial connection"""
-        port = self.port_combo.get()
+        port: str = self.port_combo.get()
         
         if port == "No ports available":
             messagebox.showerror("Error", "No COM port selected")
             return
         
         try:
-            baud_rate = int(self.baud_combo.get())
-            timeout = float(self.timeout_entry.get())
+            baud_rate: int = int(self.baud_combo.get())
+            timeout: float = float(self.timeout_entry.get())
             
             # Try to open connection
             ser = serial.Serial(
@@ -236,31 +230,35 @@ class CommunicationConfigWindow(ctk.CTkToplevel):
         except ValueError as e:
             messagebox.showerror("Error", f"Invalid configuration: {str(e)}")
     
-    def save_config(self):
+    def save_config(self) -> None:
         """Save communication configuration"""
-        port = self.port_combo.get()
+        port: str = self.port_combo.get()
         
         if port == "No ports available":
             messagebox.showerror("Error", "No COM port selected")
             return
         
         try:
-            baud_rate = int(self.baud_combo.get())
-            data_bits = int(self.data_combo.get())
-            timeout = float(self.timeout_entry.get())
+            baud_rate: int = int(self.baud_combo.get())
+            data_bits: int = int(self.data_combo.get())
+            timeout: float = float(self.timeout_entry.get())
+            stop_bits: int = int(float(self.stop_combo.get()))
             
-            config = {
-                'port': port,
-                'baud_rate': baud_rate,
-                'data_bits': data_bits,
-                'parity': self.parity_combo.get(),
-                'stop_bits': self.stop_combo.get(),
-                'timeout': timeout
-            }
+            # Get user_id for created_by parameter
+            user_id: Optional[int] = self.db.get_user_id(self.username)
             
-            success = self.db.save_comm_config(config, self.username)
+            config_id: Optional[int] = self.db.save_comm_config(
+                config_name="Default Config",
+                com_port=port,
+                baud_rate=baud_rate,
+                data_bits=data_bits,
+                stop_bits=stop_bits,
+                parity=self.parity_combo.get(),
+                timeout_seconds=timeout,
+                created_by=user_id
+            )
             
-            if success:
+            if config_id:
                 messagebox.showinfo("Success", "Configuration saved successfully!")
             else:
                 messagebox.showerror("Error", "Failed to save configuration")
@@ -268,15 +266,25 @@ class CommunicationConfigWindow(ctk.CTkToplevel):
         except ValueError as e:
             messagebox.showerror("Error", f"Invalid configuration: {str(e)}")
     
-    def load_config(self):
+    def load_config(self) -> None:
         """Load saved configuration"""
-        config = self.db.get_comm_config()
+        config: Optional[DBRecord] = self.db.get_comm_config()
         
         if config:
-            self.port_combo.set(config.get('port', ''))
-            self.baud_combo.set(str(config.get('baud_rate', '9600')))
-            self.data_combo.set(str(config.get('data_bits', '8')))
-            self.parity_combo.set(config.get('parity', 'None'))
-            self.stop_combo.set(str(config.get('stop_bits', '1')))
+            # Extract values from config dict, converting Decimal to str as needed
+            # Handle both 'port' and 'com_port' key names
+            port: str = str(config.get('com_port') or config.get('port') or '')
+            baud_rate: str = str(config.get('baud_rate', '9600'))
+            data_bits: str = str(config.get('data_bits', '8'))
+            parity: str = str(config.get('parity', 'None'))
+            stop_bits: str = str(config.get('stop_bits', '1'))
+            # Handle both 'timeout' and 'timeout_seconds' key names
+            timeout: str = str(config.get('timeout_seconds') or config.get('timeout') or '5')
+            
+            self.port_combo.set(port)
+            self.baud_combo.set(baud_rate)
+            self.data_combo.set(data_bits)
+            self.parity_combo.set(parity)
+            self.stop_combo.set(stop_bits)
             self.timeout_entry.delete(0, 'end')
-            self.timeout_entry.insert(0, str(config.get('timeout', '5')))
+            self.timeout_entry.insert(0, timeout)

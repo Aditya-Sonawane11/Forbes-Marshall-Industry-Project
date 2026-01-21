@@ -3,32 +3,25 @@ Stage Builder Window - Create multi-stage test sequences
 """
 import customtkinter as ctk
 from tkinter import messagebox
-from data.database import Database
+from data.database import Database, DBRecord
+from typing import List, Optional
 
-class StageBuilderWindow(ctk.CTkToplevel):
-    def __init__(self, parent, username, role):
+class StageBuilderWindow(ctk.CTkFrame):
+    def __init__(self, parent: ctk.CTkFrame, username: str, role: str, is_embedded: bool = False) -> None:
         super().__init__(parent)
         
-        self.username = username
-        self.role = role
-        self.db = Database()
-        self.stages = []
-        
-        self.title("Stage Builder")
-        self.geometry("1000x750")
+        self.username: str = username
+        self.role: str = role
+        self.db: Database = Database()
+        self.stages: List[DBRecord] = []
         
         self.center_window()
         self.create_widgets()
         self.load_sequences()
     
-    def center_window(self):
-        """Center the window on screen"""
-        self.update_idletasks()
-        width = 1000
-        height = 750
-        x = (self.winfo_screenwidth() // 2) - (width // 2)
-        y = (self.winfo_screenheight() // 2) - (height // 2)
-        self.geometry(f'{width}x{height}+{x}+{y}')
+    def center_window(self) -> None:
+        """Placeholder for compatibility"""
+        pass
     
     def create_widgets(self):
         """Create stage builder UI"""
@@ -240,11 +233,17 @@ class StageBuilderWindow(ctk.CTkToplevel):
             stage_frame = ctk.CTkFrame(self.stages_list_frame)
             stage_frame.pack(pady=3, padx=5, fill="x")
             
-            stage_text = f"{idx + 1}. {stage['name']}"
+            # Display stage name with its parameters
+            stage_name = stage.get('name', 'Unknown')
+            v_range = f"{stage.get('voltage_min', 0)}-{stage.get('voltage_max', 0)}V"
+            c_range = f"{stage.get('current_min', 0)}-{stage.get('current_max', 0)}A"
+            r_range = f"{stage.get('resistance_min', 0)}-{stage.get('resistance_max', 0)}Ω"
+            stage_text = f"{idx + 1}. {stage_name} | V: {v_range} | C: {c_range} | R: {r_range}"
             ctk.CTkLabel(
                 stage_frame,
                 text=stage_text,
-                font=ctk.CTkFont(weight="bold")
+                font=ctk.CTkFont(weight="bold"),
+                text_color="white"
             ).pack(side="left", padx=10)
             
             remove_btn = ctk.CTkButton(
@@ -296,7 +295,7 @@ class StageBuilderWindow(ctk.CTkToplevel):
         for widget in self.sequences_scroll.winfo_children():
             widget.destroy()
         
-        sequences = self.db.get_test_sequences()
+        sequences = self.db.get_test_cases()
         
         if not sequences:
             ctk.CTkLabel(
@@ -316,13 +315,13 @@ class StageBuilderWindow(ctk.CTkToplevel):
             
             ctk.CTkLabel(
                 info_frame,
-                text=seq[1],
+                text=seq['name'],
                 font=ctk.CTkFont(size=14, weight="bold")
             ).pack(anchor="w")
             
             ctk.CTkLabel(
                 info_frame,
-                text=f"PCB Type: {seq[2]} | Stages: {seq[3]}",
+                text=f"PCB Type: {seq.get('description', 'N/A')} | Stages: N/A",
                 text_color="gray"
             ).pack(anchor="w")
             
@@ -344,14 +343,14 @@ class StageBuilderWindow(ctk.CTkToplevel):
                 width=70,
                 fg_color="red",
                 hover_color="darkred",
-                command=lambda s_id=seq[0]: self.delete_sequence(s_id)
+                command=lambda s_id=seq['id']: self.delete_sequence(s_id)
             )
             delete_btn.pack(side="left", padx=3)
     
     def view_sequence(self, sequence):
         """View sequence details"""
         details_window = ctk.CTkToplevel(self)
-        details_window.title(f"Sequence: {sequence[1]}")
+        details_window.title(f"Sequence: {sequence['name']}")
         details_window.geometry("600x500")
         
         # Center window
@@ -365,13 +364,13 @@ class StageBuilderWindow(ctk.CTkToplevel):
         
         ctk.CTkLabel(
             container,
-            text=sequence[1],
+            text=sequence['name'],
             font=ctk.CTkFont(size=20, weight="bold")
         ).pack(pady=10)
         
         ctk.CTkLabel(
             container,
-            text=f"PCB Type: {sequence[2]}",
+            text=f"PCB Type: {sequence.get('description', 'N/A')}",
             font=ctk.CTkFont(size=12)
         ).pack(pady=5)
         
@@ -384,16 +383,16 @@ class StageBuilderWindow(ctk.CTkToplevel):
         stages_scroll = ctk.CTkScrollableFrame(container, height=300)
         stages_scroll.pack(fill="both", expand=True, padx=10, pady=10)
         
-        stages = self.db.get_sequence_stages(sequence[0])
+        stages = self.db.get_test_stages(sequence['id'])
         
         for idx, stage in enumerate(stages):
             stage_frame = ctk.CTkFrame(stages_scroll)
             stage_frame.pack(pady=5, padx=10, fill="x")
             
-            stage_text = f"Stage {idx + 1}: {stage[2]}\n"
-            stage_text += f"Voltage: {stage[3]}-{stage[4]}V | "
-            stage_text += f"Current: {stage[5]}-{stage[6]}A | "
-            stage_text += f"Resistance: {stage[7]}-{stage[8]}Ω"
+            stage_text = f"Stage {idx + 1}: {stage['name']}\n"
+            stage_text += f"Voltage: {stage['voltage_min']}-{stage['voltage_max']}V | "
+            stage_text += f"Current: {stage['current_min']}-{stage['current_max']}A | "
+            stage_text += f"Resistance: {stage['resistance_min']}-{stage['resistance_max']}\u03a9"
             
             ctk.CTkLabel(
                 stage_frame,

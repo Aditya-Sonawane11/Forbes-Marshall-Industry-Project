@@ -2,10 +2,15 @@
 Serial Communication Handler
 """
 import serial
+import serial.tools.list_ports
 import threading
 import queue
 import time
+import logging
 from data.database import Database
+
+# Set up logger for this module
+logger = logging.getLogger(__name__)
 
 class SerialHandler:
     def __init__(self):
@@ -16,14 +21,57 @@ class SerialHandler:
         self.stop_reading = False
         self.db = Database()
     
+    @staticmethod
+    def get_available_ports():
+        """Get list of available COM ports"""
+        ports = []
+        for port in serial.tools.list_ports.comports():
+            ports.append(f"{port.device} ({port.description})")
+        return ports
+    
     def connect(self):
         """Connect to serial port using saved configuration"""
+        logger.info("=" * 60)
+        logger.info("Attempting serial connection...")
+        logger.info("=" * 60)
+        
         config = self.db.get_comm_config()
         
         if not config:
-            raise Exception("No communication configuration found. Please configure in settings.")
+            logger.error("No communication configuration found in database")
+            available_ports = self.get_available_ports()
+            logger.info(f"Available ports detected: {available_ports}")
+            ports_info = "\n".join(available_ports) if available_ports else "No ports found"
+            error_msg = f"No communication configuration found. Please configure in settings.\n\nAvailable ports:\n{ports_info}"
+            logger.error(error_msg)
+            raise Exception(error_msg)
         
         try:
+            # Get port from config - handle both 'port' and 'com_port' key names
+            port = config.get('com_port') or config.get('port')
+            baud_rate = config.get('baud_rate')
+            data_bits = config.get('data_bits')
+            timeout = config.get('timeout_seconds') or config.get('timeout')
+            
+            logger.info(f"Configuration loaded: Port={port}, BaudRate={baud_rate}, DataBits={data_bits}, Timeout={timeout}")
+            
+            # Check if configured port exists
+            available_ports_list = [p.split()[0] for p in self.get_available_ports()]  # Extract just the port name
+            
+            if port not in available_ports_list:
+                logger.warning(f"Configured port {port} not available on system")
+                available_ports = self.get_available_ports()
+                ports_info = "\n".join(available_ports) if available_ports else "No ports found"
+                
+                # Suggest the first available port
+                suggestion = ""
+                if available_ports_list:
+                    suggestion = f"\n\n[SUGGESTION] Use {available_ports_list[0]} instead and save in Communication Settings."
+                
+                error_msg = f"Configured port '{port}' is not available on this system.{suggestion}\n\nAvailable ports:\n{ports_info}"
+                logger.error(error_msg)
+                raise Exception(error_msg)
+            
             # Map parity string to serial constant
             parity_map = {
                 'None': serial.PARITY_NONE,
@@ -40,21 +88,29 @@ class SerialHandler:
                 '2': serial.STOPBITS_TWO
             }
             
+            logger.info(f"Opening serial port: {port}")
             self.serial_port = serial.Serial(
-                port=config['port'],
-                baudrate=config['baud_rate'],
-                bytesize=config['data_bits'],
-                parity=parity_map.get(config['parity'], serial.PARITY_NONE),
-                stopbits=stopbits_map.get(config['stop_bits'], serial.STOPBITS_ONE),
-                timeout=config['timeout']
+                port=port,
+                baudrate=baud_rate,
+                bytesize=data_bits,
+                parity=parity_map.get(config.get('parity', 'None'), serial.PARITY_NONE),
+                stopbits=stopbits_map.get(str(config.get('stop_bits', '1')), serial.STOPBITS_ONE),
+                timeout=float(timeout) if timeout else 5.0
             )
             
             self.is_connected = True
+            logger.info(f"✓ Serial port opened successfully on {port}")
             self.start_reading()
+            logger.info("Background read thread started")
             return True
             
         except serial.SerialException as e:
-            raise Exception(f"Failed to connect: {str(e)}")
+            logger.error(f"Serial connection failed: {str(e)}")
+            available_ports = self.get_available_ports()
+            ports_info = "\n".join(available_ports) if available_ports else "No ports found"
+            logger.error(f"Available ports: {ports_info}")
+            error_msg = f"Failed to connect to {config.get('com_port') or config.get('port')}: {str(e)}\n\nAvailable ports:\n{ports_info}"
+            raise Exception(error_msg)
     
     def disconnect(self):
         """Disconnect from serial port"""

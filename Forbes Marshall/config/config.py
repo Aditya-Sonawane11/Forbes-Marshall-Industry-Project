@@ -8,9 +8,9 @@ LOGIN_WINDOW_SIZE = "400x500"
 DASHBOARD_WINDOW_SIZE = "1200x700"
 
 # Roles
-ROLE_ADMIN = "admin"
-ROLE_MANAGER = "manager"
-ROLE_TESTER = "tester"
+ROLE_ADMIN = "Admin"
+ROLE_MANAGER = "Manager"
+ROLE_TESTER = "Tester"
 
 # Role Hierarchy (higher number = more access)
 ROLE_LEVELS = {
@@ -19,8 +19,12 @@ ROLE_LEVELS = {
     ROLE_TESTER: 1
 }
 
-# Database
-DB_PATH = "data/pcb_testing.db"
+# MySQL Database Configuration
+DB_HOST = "localhost"
+DB_USER = "root"
+DB_PASSWORD = "root"
+DB_NAME = "pcb_testing"
+DB_PORT = 3306
 
 # Assets
 LOGO_PATH = "assets/logo.png"

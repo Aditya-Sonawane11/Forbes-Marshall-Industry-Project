@@ -3,31 +3,24 @@ Test Case Editor Window
 """
 import customtkinter as ctk
 from tkinter import messagebox
-from data.database import Database
+from data.database import Database, DBRecord
+from typing import List, Optional
 
-class TestCaseEditorWindow(ctk.CTkToplevel):
-    def __init__(self, parent, username, role):
+class TestCaseEditorWindow(ctk.CTkFrame):
+    def __init__(self, parent: ctk.CTkFrame, username: str, role: str, is_embedded: bool = False) -> None:
         super().__init__(parent)
         
-        self.username = username
-        self.role = role
-        self.db = Database()
-        
-        self.title("Test Case Editor")
-        self.geometry("900x700")
+        self.username: str = username
+        self.role: str = role
+        self.db: Database = Database()
         
         self.center_window()
         self.create_widgets()
         self.load_test_cases()
     
-    def center_window(self):
-        """Center the window on screen"""
-        self.update_idletasks()
-        width = 900
-        height = 700
-        x = (self.winfo_screenwidth() // 2) - (width // 2)
-        y = (self.winfo_screenheight() // 2) - (height // 2)
-        self.geometry(f'{width}x{height}+{x}+{y}')
+    def center_window(self) -> None:
+        """Placeholder for compatibility"""
+        pass
     
     def create_widgets(self):
         """Create test case editor UI"""
@@ -211,9 +204,9 @@ class TestCaseEditorWindow(ctk.CTkToplevel):
             tc_frame = ctk.CTkFrame(self.test_cases_scroll)
             tc_frame.pack(pady=5, padx=10, fill="x")
             
-            info_text = f"PCB Type: {tc[1]}\n"
-            info_text += f"Voltage: {tc[2]}-{tc[3]}V | Current: {tc[4]}-{tc[5]}A | Resistance: {tc[6]}-{tc[7]}Ω\n"
-            info_text += f"Description: {tc[8] if tc[8] else 'N/A'}"
+            info_text = f"PCB Type: {tc['name']}\n"
+            info_text += f"Voltage: {tc['voltage_min']}-{tc['voltage_max']}V | Current: {tc['current_min']}-{tc['current_max']}A | Resistance: {tc['resistance_min']}-{tc['resistance_max']}\u03a9\n"
+            info_text += f"Description: {tc.get('description', 'N/A')}"
             
             ctk.CTkLabel(
                 tc_frame,
@@ -228,7 +221,7 @@ class TestCaseEditorWindow(ctk.CTkToplevel):
                 width=80,
                 fg_color="red",
                 hover_color="darkred",
-                command=lambda tc_id=tc[0]: self.delete_test_case(tc_id)
+                command=lambda tc_id=tc['id']: self.delete_test_case(tc_id)
             )
             delete_btn.pack(side="right", padx=10)
     

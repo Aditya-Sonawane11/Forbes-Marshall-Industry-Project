@@ -3,35 +3,27 @@ Results History Window
 """
 import customtkinter as ctk
 from tkinter import messagebox, filedialog
-from data.database import Database
+from data.database import Database, DBRecord
 import csv
 from datetime import datetime
+from typing import List, Dict, Any
 
-class ResultsHistoryWindow(ctk.CTkToplevel):
-    def __init__(self, parent, username, role):
+class ResultsHistoryWindow(ctk.CTkFrame):
+    def __init__(self, parent: ctk.CTkFrame, username: str, role: str, is_embedded: bool = False) -> None:
         super().__init__(parent)
         
-        self.username = username
-        self.role = role
-        self.db = Database()
+        self.username: str = username
+        self.role: str = role
+        self.db: Database = Database()
         
-        self.title("Test Results History")
-        self.geometry("1200x700")
-        
-        self.center_window()
         self.create_widgets()
         self.load_results()
     
-    def center_window(self):
-        """Center the window on screen"""
-        self.update_idletasks()
-        width = 1200
-        height = 700
-        x = (self.winfo_screenwidth() // 2) - (width // 2)
-        y = (self.winfo_screenheight() // 2) - (height // 2)
-        self.geometry(f'{width}x{height}+{x}+{y}')
+    def center_window(self) -> None:
+        """Placeholder for compatibility"""
+        pass
     
-    def create_widgets(self):
+    def create_widgets(self) -> None:
         """Create results history UI"""
         # Main container
         container = ctk.CTkFrame(self)
@@ -128,33 +120,33 @@ class ResultsHistoryWindow(ctk.CTkToplevel):
         )
         close_btn.pack(pady=10)
     
-    def load_results(self, *args):
+    def load_results(self, *args) -> None:
         """Load and display test results"""
         # Clear existing
         for widget in self.results_scroll.winfo_children():
             widget.destroy()
         
         # Get filters
-        status_filter = self.status_filter.get()
-        search_query = self.search_entry.get().strip()
+        status_filter: str = self.status_filter.get()
+        search_query: str = self.search_entry.get().strip()
         
         # Get results based on role
+        results: List[DBRecord] = self.db.get_test_results()
         if self.role == "tester":
-            results = self.db.get_test_results(username=self.username)
-        else:
-            results = self.db.get_test_results()
+            # Need to get actual username, not just filter by role
+            results = [r for r in results if r.get('user_id') == self.db.get_user_id(self.username)]
         
         # Apply filters
         if status_filter != "All":
-            results = [r for r in results if r[3] == status_filter]
+            results = [r for r in results if r.get('status') == status_filter]
         
         if search_query:
-            results = [r for r in results if search_query.lower() in r[1].lower()]
+            results = [r for r in results if search_query.lower() in str(r.get('pcb_serial_number', '')).lower()]
         
         # Update stats
         total = len(results)
-        passed = len([r for r in results if r[3] == "PASS"])
-        failed = len([r for r in results if r[3] == "FAIL"])
+        passed = len([r for r in results if r['status'] == "Pass"])
+        failed = len([r for r in results if r['status'] == "Fail"])
         pass_rate = (passed / total * 100) if total > 0 else 0
         
         self.stats_label.configure(
@@ -175,32 +167,38 @@ class ResultsHistoryWindow(ctk.CTkToplevel):
             result_frame.pack(pady=2, padx=5, fill="x")
             
             # PCB ID
-            ctk.CTkLabel(result_frame, text=result[1], width=100).pack(side="left", padx=5)
+            pcb_id: str = str(result.get('pcb_serial_number', 'N/A'))
+            ctk.CTkLabel(result_frame, text=pcb_id, width=100).pack(side="left", padx=5)
             
             # Tester
-            ctk.CTkLabel(result_frame, text=result[2], width=100).pack(side="left", padx=5)
+            tester_id: str = str(result.get('user_id', 'N/A'))
+            ctk.CTkLabel(result_frame, text=tester_id, width=100).pack(side="left", padx=5)
             
             # Status
-            status_color = "green" if result[3] == "PASS" else "red"
+            status: str = str(result.get('status', 'N/A'))
+            status_color = "green" if status == "Pass" else "red"
             ctk.CTkLabel(
                 result_frame,
-                text=result[3],
+                text=status,
                 width=80,
                 text_color=status_color,
                 font=ctk.CTkFont(weight="bold")
             ).pack(side="left", padx=5)
             
             # Voltage
-            ctk.CTkLabel(result_frame, text=f"{result[4]:.2f}V", width=80).pack(side="left", padx=5)
+            start_time: str = str(result.get('start_time', 'N/A'))
+            ctk.CTkLabel(result_frame, text=start_time, width=150).pack(side="left", padx=5)
             
             # Current
-            ctk.CTkLabel(result_frame, text=f"{result[5]:.2f}A", width=80).pack(side="left", padx=5)
+            current: str = str(result.get('overall_pass', 'N/A'))
+            ctk.CTkLabel(result_frame, text=f"{current}A", width=80).pack(side="left", padx=5)
             
             # Resistance
-            ctk.CTkLabel(result_frame, text=f"{result[6]:.1f}Ω", width=100).pack(side="left", padx=5)
+            ctk.CTkLabel(result_frame, text="N/A", width=100).pack(side="left", padx=5)
             
             # Date/Time
-            ctk.CTkLabel(result_frame, text=result[8], width=150).pack(side="left", padx=5)
+            end_time: str = str(result.get('end_time', 'N/A'))
+            ctk.CTkLabel(result_frame, text=end_time, width=150).pack(side="left", padx=5)
             
             # View details button
             view_btn = ctk.CTkButton(
@@ -211,9 +209,9 @@ class ResultsHistoryWindow(ctk.CTkToplevel):
             )
             view_btn.pack(side="left", padx=5)
     
-    def view_details(self, result):
+    def view_details(self, result: DBRecord) -> None:
         """Show detailed view of a test result"""
-        details_window = ctk.CTkToplevel(self)
+        details_window: ctk.CTkToplevel = ctk.CTkToplevel(self)
         details_window.title("Test Result Details")
         details_window.geometry("500x600")
         
@@ -232,20 +230,45 @@ class ResultsHistoryWindow(ctk.CTkToplevel):
             font=ctk.CTkFont(size=20, weight="bold")
         ).pack(pady=20)
         
-        details_text = f"""
-PCB ID: {result[1]}
-Tester: {result[2]}
-Status: {result[3]}
-
-Test Parameters:
-  Voltage: {result[4]:.2f} V
-  Current: {result[5]:.2f} A
-  Resistance: {result[6]:.1f} Ω
-
-Notes: {result[7] if result[7] else 'N/A'}
-
-Test Date/Time: {result[8]}
-        """
+        # Get stage results to display measurements
+        stage_results = self.db.get_stage_results(result['id'])
+        
+        # Build details text
+        details_text = f"PCB ID: {result['pcb_serial_number']}\n"
+        details_text += f"Tester: {result.get('user_id', 'Unknown')}\n"
+        details_text += f"Status: {result['status']}\n\n"
+        
+        details_text += "Test Parameters:\n"
+        
+        # Get average/first stage measurements if available
+        if stage_results:
+            voltages = [s.get('voltage_measured', 0) for s in stage_results]
+            currents = [s.get('current_measured', 0) for s in stage_results]
+            resistances = [s.get('resistance_measured', 0) for s in stage_results]
+            
+            avg_voltage = sum(voltages) / len(voltages) if voltages else 0
+            avg_current = sum(currents) / len(currents) if currents else 0
+            avg_resistance = sum(resistances) / len(resistances) if resistances else 0
+            
+            details_text += f"  Voltage: {avg_voltage:.2f}V\n"
+            details_text += f"  Current: {avg_current:.2f}A\n"
+            details_text += f"  Resistance: {avg_resistance:.2f}Ω\n"
+            
+            # Add individual stage details
+            details_text += "\nStage Details:\n"
+            for idx, stage_result in enumerate(stage_results, 1):
+                details_text += f"  Stage {idx}:\n"
+                details_text += f"    Voltage: {stage_result.get('voltage_measured', 'N/A')} V\n"
+                details_text += f"    Current: {stage_result.get('current_measured', 'N/A')} A\n"
+                details_text += f"    Resistance: {stage_result.get('resistance_measured', 'N/A')} Ω\n"
+                details_text += f"    Status: {stage_result.get('status', 'N/A')}\n"
+        else:
+            details_text += "  Voltage: N/A\n"
+            details_text += "  Current: N/A\n"
+            details_text += "  Resistance: N/A\n"
+        
+        details_text += f"\nNotes: {result.get('notes', 'N/A')}\n\n"
+        details_text += f"Test Date/Time: {result.get('start_time', 'N/A')}"
         
         text_widget = ctk.CTkTextbox(container, width=450, height=400)
         text_widget.pack(pady=20)
@@ -260,24 +283,23 @@ Test Date/Time: {result[8]}
         )
         close_btn.pack(pady=10)
     
-    def export_to_csv(self):
+    def export_to_csv(self) -> None:
         """Export results to CSV file"""
         # Get current filtered results
+        results: List[DBRecord] = self.db.get_test_results()
         if self.role == "tester":
-            results = self.db.get_test_results(username=self.username)
-        else:
-            results = self.db.get_test_results()
-        
-        status_filter = self.status_filter.get()
+            user_id: Any = self.db.get_user_id(self.username)
+            results = [r for r in results if r.get('user_id') == user_id]
+        status_filter: str = self.status_filter.get()
         if status_filter != "All":
-            results = [r for r in results if r[3] == status_filter]
+            results = [r for r in results if r['status'] == status_filter]
         
         if not results:
             messagebox.showwarning("No Data", "No results to export")
             return
         
         # Ask for save location
-        filename = filedialog.asksaveasfilename(
+        filename: str = filedialog.asksaveasfilename(
             defaultextension=".csv",
             filetypes=[("CSV files", "*.csv"), ("All files", "*.*")],
             initialfile=f"test_results_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv"

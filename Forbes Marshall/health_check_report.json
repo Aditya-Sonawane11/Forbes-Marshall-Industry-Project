@@ -1,0 +1,44 @@
+{
+  "timestamp": "2025-12-11 16:13:30",
+  "database": {
+    "connection": "OK",
+    "integrity": "OK",
+    "size_mb": null
+  },
+  "tables": {
+    "users": 0,
+    "test_cases": 0,
+    "test_stages": 0,
+    "test_results": 0,
+    "test_stage_results": 0,
+    "jig_diagrams": 0,
+    "communication_config": 0,
+    "test_statistics": 0,
+    "audit_log": 0
+  },
+  "users": {
+    "admin": {
+      "status": "FAILED"
+    },
+    "manager": {
+      "status": "FAILED"
+    },
+    "tester": {
+      "status": "FAILED"
+    }
+  },
+  "operations": {
+    "test_case_ops": "ERROR - MySQL server has gone away",
+    "test_result_ops": "SKIPPED - No test cases"
+  },
+  "performance": {
+    "Get all test cases": "0.21ms",
+    "Get all test results": "0.17ms",
+    "Get all users": "0.14ms"
+  },
+  "backups": {
+    "count": 0,
+    "status": "OK"
+  },
+  "overall_status": "UNHEALTHY"
+}

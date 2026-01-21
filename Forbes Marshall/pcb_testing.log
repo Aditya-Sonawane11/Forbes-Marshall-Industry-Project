@@ -1,0 +1,266 @@
+2026-01-21 11:16:45,658 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 11:16:45,658 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 11:16:45,659 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 11:16:45,659 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 11:16:45,861 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 11:16:45,900 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 11:16:45,918 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 11:16:45,922 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 11:16:45,922 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 11:16:45,922 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 11:16:45,923 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 11:16:45,923 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 11:16:45,923 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 11:16:45,924 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 11:16:45,954 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 11:16:58,336 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 11:16:59,688 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 11:16:59,689 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 11:16:59,689 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 11:16:59,689 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 11:16:59,689 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 11:16:59,691 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 11:16:59,692 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: KeyError
+2026-01-21 11:16:59,693 - ui.start_test - ERROR - [start_test.py:227] - Error Message: 'port'
+2026-01-21 11:16:59,704 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 50, in connect
+    logger.info(f"Configuration loaded: Port={config['port']}, BaudRate={config['baud_rate']}, DataBits={config['data_bits']}")
+                                              ~~~~~~^^^^^^^^
+KeyError: 'port'
+
+2026-01-21 11:18:11,997 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 11:18:11,997 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 11:18:11,997 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 11:18:11,998 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 11:18:12,248 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 11:18:12,249 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 11:18:12,249 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 11:18:12,249 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 11:18:12,249 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 11:18:12,250 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 11:18:12,250 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 11:18:12,250 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 11:18:12,250 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 11:18:12,251 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 11:18:12,361 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 11:18:27,745 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 11:18:29,113 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 11:18:29,113 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 11:18:29,113 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 11:18:29,113 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 11:18:29,114 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 11:18:29,115 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM1, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 11:18:29,115 - utils.serial_handler - INFO - [serial_handler.py:74] - Opening serial port: COM1
+2026-01-21 11:18:29,117 - utils.serial_handler - ERROR - [serial_handler.py:91] - Serial connection failed: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2026-01-21 11:18:29,129 - utils.serial_handler - ERROR - [serial_handler.py:94] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:18:29,134 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 11:18:29,134 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 11:18:29,135 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM1: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:18:29,141 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 75, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 96, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM1: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 11:18:29,150 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 11:18:30,977 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 11:18:30,978 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 11:18:30,978 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 11:18:30,978 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 11:18:30,978 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 11:18:30,981 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM1, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 11:18:30,981 - utils.serial_handler - INFO - [serial_handler.py:74] - Opening serial port: COM1
+2026-01-21 11:18:30,989 - utils.serial_handler - ERROR - [serial_handler.py:91] - Serial connection failed: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2026-01-21 11:18:30,999 - utils.serial_handler - ERROR - [serial_handler.py:94] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:18:31,003 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 11:18:31,003 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 11:18:31,004 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM1: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:18:31,007 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 75, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 96, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM1: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 11:18:31,012 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 11:18:32,353 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 11:18:32,353 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 11:18:32,354 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 11:18:32,354 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 11:18:32,354 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 11:18:32,356 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM1, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 11:18:32,356 - utils.serial_handler - INFO - [serial_handler.py:74] - Opening serial port: COM1
+2026-01-21 11:18:32,357 - utils.serial_handler - ERROR - [serial_handler.py:91] - Serial connection failed: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2026-01-21 11:18:32,366 - utils.serial_handler - ERROR - [serial_handler.py:94] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:18:32,366 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 11:18:32,366 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 11:18:32,366 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM1: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:18:32,370 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 75, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 96, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM1: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 11:18:32,374 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 11:18:33,091 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 11:18:33,092 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 11:18:33,092 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 11:18:33,093 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 11:18:33,093 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 11:18:33,095 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM1, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 11:18:33,096 - utils.serial_handler - INFO - [serial_handler.py:74] - Opening serial port: COM1
+2026-01-21 11:18:33,096 - utils.serial_handler - ERROR - [serial_handler.py:91] - Serial connection failed: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+2026-01-21 11:18:33,104 - utils.serial_handler - ERROR - [serial_handler.py:94] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:18:33,182 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 11:18:33,183 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 11:18:33,189 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM1: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:18:33,193 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 75, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 96, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM1: could not open port 'COM1': FileNotFoundError(2, 'The system cannot find the file specified.', None, 2)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 11:18:33,202 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog

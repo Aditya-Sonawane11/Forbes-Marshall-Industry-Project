@@ -4,26 +4,24 @@ Start Test Window
 import customtkinter as ctk
 from tkinter import messagebox
 import random
-from data.database import Database
+import logging
+import traceback
+from data.database import Database, DBRecord
 from utils.serial_handler import SerialHandler
+from typing import List, Optional
 
-class StartTestWindow(ctk.CTkToplevel):
-    def __init__(self, parent, username):
+# Set up logger for this module
+logger = logging.getLogger(__name__)
+
+class StartTestWindow(ctk.CTkFrame):
+    def __init__(self, parent: ctk.CTkFrame, username: str, is_embedded: bool = False) -> None:
         super().__init__(parent)
         
-        self.username = username
-        self.db = Database()
-        self.serial_handler = SerialHandler()
-        self.use_serial = False
-        
-        self.title("Start Test")
-        self.geometry("800x650")
-        
-        # Center window
-        self.center_window()
-        
-        # Handle window close
-        self.protocol("WM_DELETE_WINDOW", self.on_closing)
+        logger.info(f"Initializing StartTestWindow for user: {username}")
+        self.username: str = username
+        self.db: Database = Database()
+        self.serial_handler: SerialHandler = SerialHandler()
+        self.use_serial: bool = False
         
         # Create UI
         self.create_widgets()
@@ -206,44 +204,184 @@ class StartTestWindow(ctk.CTkToplevel):
     
     def toggle_serial(self):
         """Toggle serial communication"""
+        logger.info(f"CLICK: toggle_serial - Serial switch value: {self.serial_switch.get()}")
+        
         if self.serial_switch.get():
             try:
+                logger.info("Attempting to connect to serial port...")
                 self.serial_handler.connect()
                 self.use_serial = True
                 self.serial_status_label.configure(text="✓ Connected", text_color="green")
+                logger.info("✓ Serial connection successful!")
                 
                 # Disable manual entry when using serial
                 self.voltage_entry.configure(state="disabled")
                 self.current_entry.configure(state="disabled")
                 self.resistance_entry.configure(state="disabled")
+                logger.info("Manual entry fields disabled - reading from serial")
                 
                 messagebox.showinfo("Connected", "Serial connection established")
             except Exception as e:
+                logger.error(f"ERROR: Serial connection failed")
+                logger.error(f"Exception Type: {type(e).__name__}")
+                logger.error(f"Error Message: {str(e)}")
+                logger.error(f"Traceback:\n{traceback.format_exc()}")
+                
                 self.serial_switch.deselect()
                 self.use_serial = False
                 self.serial_status_label.configure(text="✗ Failed", text_color="red")
-                messagebox.showerror("Connection Error", str(e))
+                
+                # Show custom error dialog with ports information
+                error_msg = str(e)
+                
+                # Check if this is a port-related error
+                if "No communication configuration" in error_msg or "Failed to connect" in error_msg:
+                    logger.info("Showing ports error dialog")
+                    # Create custom dialog showing available ports
+                    self.show_ports_error_dialog(error_msg)
+                else:
+                    messagebox.showerror("Connection Error", error_msg)
         else:
-            self.serial_handler.disconnect()
-            self.use_serial = False
-            self.serial_status_label.configure(text="")
-            
-            # Re-enable manual entry
-            self.voltage_entry.configure(state="normal")
-            self.current_entry.configure(state="normal")
-            self.resistance_entry.configure(state="normal")
+            try:
+                logger.info("Disconnecting from serial port...")
+                self.serial_handler.disconnect()
+                self.use_serial = False
+                self.serial_status_label.configure(text="")
+                logger.info("✓ Serial disconnected")
+                
+                # Re-enable manual entry
+                self.voltage_entry.configure(state="normal")
+                self.current_entry.configure(state="normal")
+                self.resistance_entry.configure(state="normal")
+                logger.info("Manual entry fields enabled")
+            except Exception as e:
+                logger.error(f"ERROR: Failed to disconnect serial")
+                logger.error(f"Exception: {str(e)}")
+                logger.error(f"Traceback:\n{traceback.format_exc()}")
+    
+    def show_ports_error_dialog(self, error_msg: str) -> None:
+        """Show error dialog with available ports"""
+        # Get available ports
+        available_ports = self.serial_handler.get_available_ports()
+        
+        # Create error window
+        error_window = ctk.CTkToplevel(self)
+        error_window.title("Serial Connection Error")
+        error_window.geometry("600x400")
+        error_window.resizable(True, True)
+        
+        # Center the window
+        error_window.update_idletasks()
+        x = (error_window.winfo_screenwidth() // 2) - 300
+        y = (error_window.winfo_screenheight() // 2) - 200
+        error_window.geometry(f"+{x}+{y}")
+        
+        # Main frame
+        main_frame = ctk.CTkFrame(error_window)
+        main_frame.pack(fill="both", expand=True, padx=20, pady=20)
+        
+        # Error title
+        title_label = ctk.CTkLabel(
+            main_frame,
+            text="❌ Connection Failed",
+            font=ctk.CTkFont(size=16, weight="bold"),
+            text_color="red"
+        )
+        title_label.pack(pady=10)
+        
+        # Error message
+        msg_label = ctk.CTkLabel(
+            main_frame,
+            text=error_msg,
+            font=ctk.CTkFont(size=11),
+            wraplength=550,
+            justify="left"
+        )
+        msg_label.pack(pady=10, padx=10, anchor="w")
+        
+        # Available ports section
+        ports_title = ctk.CTkLabel(
+            main_frame,
+            text="Available COM Ports:",
+            font=ctk.CTkFont(size=12, weight="bold")
+        )
+        ports_title.pack(pady=(20, 5), anchor="w", padx=10)
+        
+        # Ports list frame
+        ports_frame = ctk.CTkScrollableFrame(main_frame, height=150)
+        ports_frame.pack(fill="both", expand=True, padx=10, pady=5)
+        
+        if available_ports:
+            for port in available_ports:
+                port_label = ctk.CTkLabel(
+                    ports_frame,
+                    text=f"• {port}",
+                    font=ctk.CTkFont(size=11),
+                    justify="left"
+                )
+                port_label.pack(anchor="w", padx=10, pady=3)
+        else:
+            no_ports_label = ctk.CTkLabel(
+                ports_frame,
+                text="No COM ports detected on this system",
+                font=ctk.CTkFont(size=11),
+                text_color="orange"
+            )
+            no_ports_label.pack(anchor="w", padx=10, pady=10)
+        
+        # Instructions
+        instr_label = ctk.CTkLabel(
+            main_frame,
+            text="→ Click 'Open Communication Settings' to configure the correct COM port",
+            font=ctk.CTkFont(size=10),
+            text_color="gray",
+            wraplength=550,
+            justify="left"
+        )
+        instr_label.pack(pady=(10, 20), padx=10, anchor="w")
+        
+        # Button frame
+        button_frame = ctk.CTkFrame(main_frame)
+        button_frame.pack(pady=10)
+        
+        # Configure settings button
+        config_btn = ctk.CTkButton(
+            button_frame,
+            text="Open Communication Settings",
+            width=180,
+            fg_color="#0066cc",
+            command=lambda: self.open_communication_settings(error_window)
+        )
+        config_btn.pack(side="left", padx=5)
+        
+        # Close button
+        close_btn = ctk.CTkButton(
+            button_frame,
+            text="Close",
+            width=100,
+            fg_color="gray",
+            command=error_window.destroy
+        )
+        close_btn.pack(side="left", padx=5)
     
     def run_test(self):
         """Run the PCB test"""
+        logger.info("CLICK: run_test button")
+        
         pcb_id = self.pcb_id_entry.get().strip()
+        logger.info(f"PCB ID entered: {pcb_id}")
         
         if not pcb_id:
+            logger.warning("ERROR: No PCB ID provided")
             messagebox.showerror("Error", "Please enter PCB ID")
             return
+        
+        logger.info(f"Starting test for PCB: {pcb_id}, Serial Mode: {self.use_serial}")
         
         if self.use_serial:
             # Read from serial
             try:
+                logger.info("Reading test data from serial...")
                 self.result_label.configure(text="Reading from PCB...", text_color="orange")
                 self.update()
                 
@@ -251,7 +389,7 @@ class StartTestWindow(ctk.CTkToplevel):
                 voltage = test_data['voltage']
                 current = test_data['current']
                 resistance = test_data['resistance']
-                
+                logger.info(f"Serial data received: V={voltage}, C={current}, R={resistance}")
                 # Update display
                 self.voltage_entry.configure(state="normal")
                 self.current_entry.configure(state="normal")
@@ -292,9 +430,23 @@ class StartTestWindow(ctk.CTkToplevel):
         # Get notes
         notes = self.notes_entry.get("1.0", "end-1c").strip()
         
-        # Save to database
-        status = "PASS" if test_passed else "FAIL"
-        self.db.save_test_result(pcb_id, self.username, status, voltage, current, resistance, notes)
+        # Get user_id for save_test_result
+        user_id = self.db.get_user_id(self.username)
+        
+        # Get test case ID (for now, use the first one or None)
+        test_cases = self.db.get_test_cases()
+        test_case_id = test_cases[0]['id'] if test_cases else None
+        
+        # Save to database with new signature
+        status = "Pass" if test_passed else "Fail"
+        result_id = self.db.save_test_result(
+            test_case_id=test_case_id,
+            user_id=user_id,
+            pcb_serial_number=pcb_id,
+            status=status,
+            overall_pass=test_passed,
+            notes=notes
+        )
         
         # Display result
         if test_passed:
@@ -341,3 +493,39 @@ class StartTestWindow(ctk.CTkToplevel):
         
         # Re-focus on PCB ID for next scan
         self.pcb_id_entry.focus()
+    
+    def open_communication_settings(self, error_window: Optional[ctk.CTkToplevel] = None) -> None:
+        """Open Communication Settings window from dashboard"""
+        try:
+            from ui.communication_config import CommunicationConfigWindow
+            
+            # Close error window if provided
+            if error_window:
+                error_window.destroy()
+            
+            logger.info("Opening Communication Settings window")
+            
+            # Get parent window (should be dashboard)
+            parent = self.master
+            while parent and not isinstance(parent, ctk.CTkToplevel):
+                parent = parent.master
+            
+            # Create communication config window
+            config_window = ctk.CTkToplevel(parent if parent else self)
+            config_window.title("Communication Configuration")
+            config_window.geometry("700x600")
+            
+            # Center window
+            config_window.update_idletasks()
+            x = (config_window.winfo_screenwidth() // 2) - 350
+            y = (config_window.winfo_screenheight() // 2) - 300
+            config_window.geometry(f"+{x}+{y}")
+            
+            # Create and pack the communication config frame
+            config_frame = CommunicationConfigWindow(config_window, self.username, "admin")
+            config_frame.pack(fill="both", expand=True)
+            
+        except Exception as e:
+            logger.error(f"Failed to open Communication Settings: {str(e)}")
+            logger.error(f"Traceback:\n{traceback.format_exc()}")
+            messagebox.showerror("Error", f"Failed to open Communication Settings:\n{str(e)}")
