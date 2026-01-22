@@ -164,35 +164,70 @@ class SerialHandler:
     def read_test_data(self):
         """
         Read test data from PCB
-        Expected format: "V:5.0,C:0.5,R:100.0"
+        Expected format: 
+        235,Voltage,4.4
+        235,resistance,1
+        235,current,0
+        
         Returns dict with voltage, current, resistance
         """
-        data = self.read(timeout=5.0)
+        result = {}
+        timeout_counter = 0
+        max_attempts = 10  # Try reading up to 10 lines
         
-        if not data:
-            raise Exception("No data received from PCB")
+        logger.info("Reading test data from PCB...")
         
-        try:
-            # Parse data
-            parts = data.split(',')
-            result = {}
+        while timeout_counter < max_attempts:
+            data = self.read(timeout=2.0)
             
-            for part in parts:
-                key, value = part.split(':')
-                key = key.strip().upper()
-                value = float(value.strip())
+            if not data:
+                timeout_counter += 1
+                continue
+            
+            try:
+                # Parse CSV format: PCB_ID,Parameter,Value
+                parts = data.strip().split(',')
                 
-                if key == 'V':
+                if len(parts) < 3:
+                    logger.warning(f"Invalid data format: {data}")
+                    continue
+                
+                pcb_id = parts[0].strip()
+                parameter = parts[1].strip().lower()
+                value = float(parts[2].strip())
+                
+                logger.info(f"Parsed - PCB ID: {pcb_id}, Parameter: {parameter}, Value: {value}")
+                
+                # Map parameter names to result keys
+                if parameter == 'voltage':
                     result['voltage'] = value
-                elif key == 'C':
+                elif parameter == 'current':
                     result['current'] = value
-                elif key == 'R':
+                elif parameter == 'resistance':
                     result['resistance'] = value
-            
+                
+                # Check if we have all required values
+                if len(result) == 3:
+                    logger.info(f"All test data received: {result}")
+                    return result
+                    
+            except Exception as e:
+                logger.warning(f"Failed to parse data line: {data} - {str(e)}")
+                continue
+        
+        # Check if we got partial data
+        if result:
+            logger.warning(f"Incomplete data received, using what we have: {result}")
+            # Fill in missing values with 0
+            if 'voltage' not in result:
+                result['voltage'] = 0
+            if 'current' not in result:
+                result['current'] = 0
+            if 'resistance' not in result:
+                result['resistance'] = 0
             return result
-            
-        except Exception as e:
-            raise Exception(f"Failed to parse test data: {str(e)}")
+        
+        raise Exception("No test data received from PCB after multiple attempts")
     
     def send_command(self, command):
         """Send command to PCB and wait for acknowledgment"""

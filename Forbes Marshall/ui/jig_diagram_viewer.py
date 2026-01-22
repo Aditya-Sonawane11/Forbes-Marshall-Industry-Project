@@ -5,8 +5,12 @@ import customtkinter as ctk
 from tkinter import messagebox, filedialog
 from PIL import Image, ImageTk
 import os
+import logging
 from data.database import Database, DBRecord
 from typing import Optional, List
+
+# Set up logger for this module
+logger = logging.getLogger(__name__)
 
 class JigDiagramViewerWindow(ctk.CTkFrame):
     def __init__(self, parent: ctk.CTkFrame, username: str, role: str, is_embedded: bool = False) -> None:
@@ -17,6 +21,12 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
         self.db: Database = Database()
         self.current_diagram: Optional[DBRecord] = None
         self.current_image: Optional[ctk.CTkImage] = None
+        self.diagrams_data: List[DBRecord] = []
+        
+        # Ensure diagrams directory exists
+        os.makedirs("assets/diagrams", exist_ok=True)
+        
+        logger.info(f"Initializing JigDiagramViewerWindow for user: {username}")
         
         self.center_window()
         self.create_widgets()
@@ -143,17 +153,20 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
     def display_diagram(self) -> None:
         """Display the selected diagram"""
         if not self.current_diagram:
+            logger.warning("No diagram selected")
             return
         
-        diagram_path: str = self.current_diagram['image_path']
+        diagram_path: str = self.current_diagram.get('image_path', '')
         
         if not os.path.exists(diagram_path):
+            logger.error(f"Diagram file not found: {diagram_path}")
             messagebox.showerror("Error", "Diagram file not found")
             return
         
         try:
             # Load and display image
             image: Image.Image = Image.open(diagram_path)
+            logger.info(f"Loaded diagram: {diagram_path}, Size: {image.size}")
             
             # Resize to fit (max 800x500)
             max_width: int = 800
@@ -166,11 +179,15 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
             self.current_image = photo  # Keep reference to prevent garbage collection
             
             # Update info
+            name = self.current_diagram.get('name', 'N/A')
+            description = self.current_diagram.get('description', 'N/A')
             self.info_label.configure(
-                text=f"PCB Type: {self.current_diagram.get('description', 'N/A')} | Description: {self.current_diagram.get('notes', 'N/A')}"
+                text=f"Diagram: {name} | Type: {description}"
             )
+            logger.info(f"Displayed diagram: {name}")
             
         except Exception as e:
+            logger.error(f"Failed to load diagram: {str(e)}")
             messagebox.showerror("Error", f"Failed to load diagram: {str(e)}")
     
     def upload_diagram(self) -> None:
@@ -191,6 +208,12 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
         upload_dialog: ctk.CTkToplevel = ctk.CTkToplevel(self)
         upload_dialog.title("Upload Diagram")
         upload_dialog.geometry("400x300")
+        
+        # Make window appear on top
+        upload_dialog.attributes('-topmost', True)
+        upload_dialog.lift()
+        upload_dialog.focus_force()
+        upload_dialog.grab_set()
         
         # Center dialog
         upload_dialog.update_idletasks()
@@ -228,6 +251,7 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
             description: str = desc_entry.get().strip()
             
             if not name or not pcb_type:
+                logger.warning("Diagram upload: Missing name or PCB type")
                 messagebox.showerror("Error", "Please enter diagram name and PCB type")
                 return
             
@@ -242,6 +266,7 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
             
             try:
                 shutil.copy2(file_path, dest_path)
+                logger.info(f"Copied diagram file to: {dest_path}")
                 
                 # Get user_id for uploaded_by parameter
                 user_id: Optional[int] = self.db.get_user_id(self.username)
@@ -251,17 +276,21 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
                     test_case_id=None,
                     diagram_name=name,
                     file_path=dest_path,
-                    description=description,
+                    description=pcb_type,
                     uploaded_by=user_id
                 )
                 
                 if diagram_id:
+                    logger.info(f"Diagram saved with ID: {diagram_id}, Name: {name}")
                     messagebox.showinfo("Success", "Diagram uploaded successfully!")
                     upload_dialog.destroy()
                     self.load_diagrams()
                 else:
+                    logger.error("Failed to save diagram to database")
                     messagebox.showerror("Error", "Failed to save diagram")
             except Exception as e:
+                logger.error(f"Failed to upload diagram: {str(e)}")
+                messagebox.showerror("Error", f"Failed to upload diagram: {str(e)}")
                 messagebox.showerror("Error", f"Failed to upload diagram: {str(e)}")
         
         save_btn = ctk.CTkButton(
@@ -275,20 +304,30 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
     def delete_diagram(self) -> None:
         """Delete the current diagram (Admin only)"""
         if not self.current_diagram:
+            logger.warning("No diagram selected for deletion")
             return
         
-        if messagebox.askyesno("Confirm", "Are you sure you want to delete this diagram?"):
+        diagram_name = self.current_diagram.get('name', 'Unknown')
+        if messagebox.askyesno("Confirm", f"Are you sure you want to delete '{diagram_name}'?"):
             # Delete file
             try:
-                if os.path.exists(self.current_diagram['image_path']):
-                    os.remove(self.current_diagram['image_path'])
+                file_path = self.current_diagram.get('image_path', '')
+                if os.path.exists(file_path):
+                    os.remove(file_path)
+                    logger.info(f"Deleted diagram file: {file_path}")
             except Exception as e:
-                print(f"Error deleting file: {e}")
+                logger.error(f"Error deleting file: {e}")
             
             # Delete from database
-            self.db.delete_jig_diagram(self.current_diagram['id'])
+            try:
+                self.db.delete_jig_diagram(self.current_diagram['id'])
+                logger.info(f"Deleted diagram from database: ID {self.current_diagram['id']}")
+            except Exception as e:
+                logger.error(f"Error deleting from database: {e}")
             
             self.current_diagram = None
+            messagebox.showinfo("Success", "Diagram deleted")
+            self.load_diagrams()
             self.image_label.configure(image=None, text="Select a diagram to view")
             self.info_label.configure(text="")
             self.load_diagrams()

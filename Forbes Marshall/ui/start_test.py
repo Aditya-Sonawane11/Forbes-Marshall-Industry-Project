@@ -6,6 +6,9 @@ from tkinter import messagebox
 import random
 import logging
 import traceback
+import csv
+import os
+from datetime import datetime
 from data.database import Database, DBRecord
 from utils.serial_handler import SerialHandler
 from typing import List, Optional
@@ -260,20 +263,29 @@ class StartTestWindow(ctk.CTkFrame):
                 logger.error(f"Traceback:\n{traceback.format_exc()}")
     
     def show_ports_error_dialog(self, error_msg: str) -> None:
-        """Show error dialog with available ports"""
+        """Show error dialog with available ports and port selector"""
         # Get available ports
         available_ports = self.serial_handler.get_available_ports()
+        
+        # Extract just port names (e.g., "COM17" from "COM17 (description)")
+        port_names = [port.split()[0] if port else "" for port in available_ports]
         
         # Create error window
         error_window = ctk.CTkToplevel(self)
         error_window.title("Serial Connection Error")
-        error_window.geometry("600x400")
+        error_window.geometry("650x550")
         error_window.resizable(True, True)
+        
+        # Make window appear on top
+        error_window.attributes('-topmost', True)
+        error_window.lift()
+        error_window.focus_force()
+        error_window.grab_set()
         
         # Center the window
         error_window.update_idletasks()
-        x = (error_window.winfo_screenwidth() // 2) - 300
-        y = (error_window.winfo_screenheight() // 2) - 200
+        x = (error_window.winfo_screenwidth() // 2) - 325
+        y = (error_window.winfo_screenheight() // 2) - 275
         error_window.geometry(f"+{x}+{y}")
         
         # Main frame
@@ -292,12 +304,61 @@ class StartTestWindow(ctk.CTkFrame):
         # Error message
         msg_label = ctk.CTkLabel(
             main_frame,
-            text=error_msg,
+            text=error_msg.split('\n')[0],  # Show only first line
             font=ctk.CTkFont(size=11),
             wraplength=550,
             justify="left"
         )
         msg_label.pack(pady=10, padx=10, anchor="w")
+        
+        # Port Selection Section
+        selection_frame = ctk.CTkFrame(main_frame, fg_color="#2B2B2B")
+        selection_frame.pack(pady=20, padx=10, fill="x")
+        
+        select_title = ctk.CTkLabel(
+            selection_frame,
+            text="Select COM Port:",
+            font=ctk.CTkFont(size=13, weight="bold")
+        )
+        select_title.pack(pady=(15, 10), padx=15, anchor="w")
+        
+        # Port dropdown
+        port_select_frame = ctk.CTkFrame(selection_frame, fg_color="transparent")
+        port_select_frame.pack(pady=5, padx=15, fill="x")
+        
+        port_combo = ctk.CTkComboBox(
+            port_select_frame,
+            values=port_names if port_names else ["No ports available"],
+            width=250,
+            font=ctk.CTkFont(size=12)
+        )
+        if port_names:
+            port_combo.set(port_names[0])  # Select first port by default
+        port_combo.pack(side="left", padx=(0, 10))
+        
+        # Save & Connect button
+        save_connect_btn = ctk.CTkButton(
+            port_select_frame,
+            text="Save & Connect",
+            width=150,
+            height=35,
+            fg_color="#28a745",
+            hover_color="#218838",
+            font=ctk.CTkFont(size=12, weight="bold"),
+            command=lambda: self.save_and_connect_port(port_combo.get(), error_window)
+        )
+        save_connect_btn.pack(side="left")
+        
+        # Status label for feedback
+        status_label = ctk.CTkLabel(
+            selection_frame,
+            text="",
+            font=ctk.CTkFont(size=10)
+        )
+        status_label.pack(pady=(5, 15), padx=15, anchor="w")
+        
+        # Store status label for updates
+        error_window.status_label = status_label
         
         # Available ports section
         ports_title = ctk.CTkLabel(
@@ -305,10 +366,10 @@ class StartTestWindow(ctk.CTkFrame):
             text="Available COM Ports:",
             font=ctk.CTkFont(size=12, weight="bold")
         )
-        ports_title.pack(pady=(20, 5), anchor="w", padx=10)
+        ports_title.pack(pady=(10, 5), anchor="w", padx=10)
         
         # Ports list frame
-        ports_frame = ctk.CTkScrollableFrame(main_frame, height=150)
+        ports_frame = ctk.CTkScrollableFrame(main_frame, height=100)
         ports_frame.pack(fill="both", expand=True, padx=10, pady=5)
         
         if available_ports:
@@ -329,27 +390,16 @@ class StartTestWindow(ctk.CTkFrame):
             )
             no_ports_label.pack(anchor="w", padx=10, pady=10)
         
-        # Instructions
-        instr_label = ctk.CTkLabel(
-            main_frame,
-            text="→ Click 'Open Communication Settings' to configure the correct COM port",
-            font=ctk.CTkFont(size=10),
-            text_color="gray",
-            wraplength=550,
-            justify="left"
-        )
-        instr_label.pack(pady=(10, 20), padx=10, anchor="w")
-        
         # Button frame
         button_frame = ctk.CTkFrame(main_frame)
-        button_frame.pack(pady=10)
+        button_frame.pack(pady=15)
         
-        # Configure settings button
+        # Advanced Settings button
         config_btn = ctk.CTkButton(
             button_frame,
-            text="Open Communication Settings",
-            width=180,
-            fg_color="#0066cc",
+            text="Advanced Settings",
+            width=150,
+            fg_color="gray",
             command=lambda: self.open_communication_settings(error_window)
         )
         config_btn.pack(side="left", padx=5)
@@ -448,6 +498,60 @@ class StartTestWindow(ctk.CTkFrame):
             notes=notes
         )
         
+        logger.info(f"Test result saved with ID: {result_id}")
+        
+        # Save measured values as stage result for single test
+        if result_id:
+            try:
+                # Get the first stage ID from test_stages table for this test case
+                stage_id = None
+                if test_case_id:
+                    self.db.cursor.execute(
+                        "SELECT id FROM test_stages WHERE test_case_id = %s ORDER BY stage_number LIMIT 1",
+                        (test_case_id,)
+                    )
+                    stage_result = self.db.cursor.fetchone()
+                    if stage_result:
+                        stage_id = stage_result['id']
+                    else:
+                        # Create a default stage if none exists
+                        logger.info(f"No stage found for test case {test_case_id}, creating default stage")
+                        self.db.cursor.execute(
+                            """INSERT INTO test_stages (test_case_id, stage_number, stage_name, description,
+                               voltage_min, voltage_max, current_min, current_max, resistance_min, resistance_max)
+                               VALUES (%s, 1, 'Default Stage', 'Auto-created stage for single PCB test',
+                               0, 999, 0, 999, 0, 9999)""",
+                            (test_case_id,)
+                        )
+                        self.db.conn.commit()
+                        stage_id = self.db.cursor.lastrowid
+                        logger.info(f"Created default stage with ID: {stage_id}")
+                
+                # If we found or created a stage_id, save the stage result
+                if stage_id:
+                    save_result = self.db.save_stage_result(
+                        test_result_id=result_id,
+                        stage_id=stage_id,
+                        voltage_measured=voltage,
+                        current_measured=current,
+                        resistance_measured=resistance,
+                        status=status,
+                        failure_reason=""
+                    )
+                    if save_result:
+                        logger.info(f"Stage result saved successfully with ID {save_result}: V={voltage}, C={current}, R={resistance}")
+                    else:
+                        logger.error(f"Stage result save returned None/False - check database errors")
+                else:
+                    logger.error(f"Could not find or create stage_id for test_case_id={test_case_id}")
+            except Exception as e:
+                logger.error(f"Failed to save stage result: {str(e)}")
+                import traceback
+                logger.error(traceback.format_exc())
+        
+        # Log to CSV file automatically
+        self.log_test_to_csv(pcb_id, voltage, current, resistance, status, test_passed)
+        
         # Display result
         if test_passed:
             self.result_label.configure(text="✓ TEST PASSED", text_color="green")
@@ -494,6 +598,106 @@ class StartTestWindow(ctk.CTkFrame):
         # Re-focus on PCB ID for next scan
         self.pcb_id_entry.focus()
     
+    def save_and_connect_port(self, selected_port: str, error_window: ctk.CTkToplevel) -> None:
+        """Save selected port to configuration and attempt connection"""
+        logger.info(f"CLICK: save_and_connect_port - Selected port: {selected_port}")
+        
+        if not selected_port or selected_port == "No ports available":
+            logger.warning("No valid port selected")
+            if hasattr(error_window, 'status_label'):
+                error_window.status_label.configure(
+                    text="❌ Please select a valid port",
+                    text_color="red"
+                )
+            return
+        
+        try:
+            # Update status
+            if hasattr(error_window, 'status_label'):
+                error_window.status_label.configure(
+                    text="⏳ Saving configuration...",
+                    text_color="orange"
+                )
+            error_window.update()
+            
+            # Get user ID
+            user_id = self.db.get_user_id(self.username)
+            
+            # Get existing config or use defaults
+            existing_config = self.db.get_comm_config()
+            
+            if existing_config:
+                # Update existing config with new port
+                baud_rate = existing_config.get('baud_rate', 9600)
+                data_bits = existing_config.get('data_bits', 8)
+                stop_bits = existing_config.get('stop_bits', 1)
+                parity = existing_config.get('parity', 'None')
+                timeout = existing_config.get('timeout_seconds') or existing_config.get('timeout', 5)
+            else:
+                # Use defaults
+                baud_rate = 9600
+                data_bits = 8
+                stop_bits = 1
+                parity = 'None'
+                timeout = 5
+            
+            # Save new configuration
+            logger.info(f"Saving configuration: Port={selected_port}, BaudRate={baud_rate}")
+            config_id = self.db.save_comm_config(
+                config_name="Auto-configured",
+                com_port=selected_port,
+                baud_rate=baud_rate,
+                data_bits=data_bits,
+                stop_bits=stop_bits,
+                parity=parity,
+                timeout_seconds=timeout,
+                created_by=user_id
+            )
+            
+            if not config_id:
+                raise Exception("Failed to save configuration to database")
+            
+            logger.info(f"✓ Configuration saved with ID: {config_id}")
+            
+            # Update status
+            if hasattr(error_window, 'status_label'):
+                error_window.status_label.configure(
+                    text="⏳ Connecting to port...",
+                    text_color="orange"
+                )
+            error_window.update()
+            
+            # Attempt to connect
+            self.serial_handler.connect()
+            self.use_serial = True
+            self.serial_status_label.configure(text="✓ Connected", text_color="green")
+            
+            # Disable manual entry when using serial
+            self.voltage_entry.configure(state="disabled")
+            self.current_entry.configure(state="disabled")
+            self.resistance_entry.configure(state="disabled")
+            
+            # Enable the switch
+            self.serial_switch.select()
+            
+            logger.info(f"✓ Successfully connected to {selected_port}")
+            
+            # Show success and close dialog
+            messagebox.showinfo("Success", f"Connected to {selected_port} successfully!")
+            error_window.destroy()
+            
+        except Exception as e:
+            logger.error(f"Failed to save and connect: {str(e)}")
+            logger.error(f"Traceback:\n{traceback.format_exc()}")
+            
+            if hasattr(error_window, 'status_label'):
+                error_window.status_label.configure(
+                    text=f"❌ Failed: {str(e)[:50]}...",
+                    text_color="red"
+                )
+            
+            messagebox.showerror("Connection Failed", f"Failed to connect to {selected_port}:\n{str(e)}")
+    
     def open_communication_settings(self, error_window: Optional[ctk.CTkToplevel] = None) -> None:
         """Open Communication Settings window from dashboard"""
         try:
@@ -515,6 +719,12 @@ class StartTestWindow(ctk.CTkFrame):
             config_window.title("Communication Configuration")
             config_window.geometry("700x600")
             
+            # Make window appear on top
+            config_window.attributes('-topmost', True)
+            config_window.lift()
+            config_window.focus_force()
+            config_window.grab_set()
+            
             # Center window
             config_window.update_idletasks()
             x = (config_window.winfo_screenwidth() // 2) - 350
@@ -529,3 +739,53 @@ class StartTestWindow(ctk.CTkFrame):
             logger.error(f"Failed to open Communication Settings: {str(e)}")
             logger.error(f"Traceback:\n{traceback.format_exc()}")
             messagebox.showerror("Error", f"Failed to open Communication Settings:\n{str(e)}")
+    
+    def log_test_to_csv(self, pcb_id: str, voltage: float, current: float, resistance: float, 
+                        status: str, test_passed: bool) -> None:
+        """Log test results to CSV file automatically"""
+        try:
+            # Create logs directory if it doesn't exist
+            log_dir = "logs"
+            if not os.path.exists(log_dir):
+                os.makedirs(log_dir)
+            
+            # Generate filename with date
+            csv_filename = os.path.join(log_dir, f"test_results_{datetime.now().strftime('%Y%m%d')}.csv")
+            
+            # Check if file exists to determine if we need to write header
+            file_exists = os.path.isfile(csv_filename)
+            
+            # Open file in append mode
+            with open(csv_filename, 'a', newline='', encoding='utf-8') as csvfile:
+                writer = csv.writer(csvfile)
+                
+                # Write header if file is new
+                if not file_exists:
+                    writer.writerow([
+                        'Timestamp', 'PCB ID', 'Tester', 'Status', 
+                        'Voltage (V)', 'Current (A)', 'Resistance (Ω)', 
+                        'Test Result', 'Notes'
+                    ])
+                
+                # Get notes if available
+                notes = self.notes_entry.get("1.0", "end-1c").strip() if hasattr(self, 'notes_entry') else ""
+                
+                # Write test data
+                writer.writerow([
+                    datetime.now().strftime('%Y-%m-%d %H:%M:%S'),
+                    pcb_id,
+                    self.username,
+                    status,
+                    f"{voltage:.2f}",
+                    f"{current:.2f}",
+                    f"{resistance:.2f}",
+                    "PASS" if test_passed else "FAIL",
+                    notes
+                ])
+            
+            logger.info(f"Test result logged to CSV: {csv_filename}")
+            
+        except Exception as e:
+            logger.error(f"Failed to log test to CSV: {str(e)}")
+            logger.error(traceback.format_exc())
+

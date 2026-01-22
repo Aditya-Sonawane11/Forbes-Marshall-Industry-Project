@@ -264,3 +264,753 @@ COM17 (com0com - serial port emulator (COM17))
 COM18 (com0com - serial port emulator (COM18))
 
 2026-01-21 11:18:33,202 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 11:20:01,329 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 11:20:01,330 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 11:20:01,330 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 11:20:01,330 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 11:20:02,101 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 11:20:02,102 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 11:20:02,102 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 11:20:02,102 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 11:20:02,103 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 11:20:02,103 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 11:20:02,103 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 11:20:02,104 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 11:20:02,104 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 11:20:02,105 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 11:20:02,148 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 11:23:01,465 - ui.advanced_test - INFO - [advanced_test.py:19] - Initializing AdvancedTestWindow
+2026-01-21 11:23:02,032 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 11:23:03,336 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 11:23:03,337 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 11:23:03,337 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 11:23:03,337 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 11:23:03,337 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 11:23:03,339 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM1, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 11:23:03,346 - utils.serial_handler - WARNING - [serial_handler.py:62] - Configured port COM1 not available on system
+2026-01-21 11:23:03,369 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 11:23:03,369 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 11:27:14,946 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 11:27:14,946 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 11:27:14,946 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 11:27:14,947 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 11:27:15,205 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 11:27:15,206 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 11:27:15,206 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 11:27:15,206 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 11:27:15,206 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 11:27:15,207 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 11:27:15,207 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 11:27:15,207 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 11:27:15,208 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 11:27:15,208 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 11:27:15,248 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 11:27:28,872 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 11:27:31,975 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 11:27:31,976 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 11:27:31,976 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 11:27:31,977 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 11:27:31,977 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 11:27:31,978 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM1, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 11:27:31,984 - utils.serial_handler - WARNING - [serial_handler.py:62] - Configured port COM1 not available on system
+2026-01-21 11:27:31,993 - utils.serial_handler - ERROR - [serial_handler.py:72] - Configured port 'COM1' is not available on this system.
+
+[SUGGESTION] Use COM17 instead and save in Communication Settings.
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:27:31,995 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 11:27:31,995 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 11:27:31,996 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Configured port 'COM1' is not available on this system.
+
+[SUGGESTION] Use COM17 instead and save in Communication Settings.
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:27:31,999 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 73, in connect
+    raise Exception(error_msg)
+Exception: Configured port 'COM1' is not available on this system.
+
+[SUGGESTION] Use COM17 instead and save in Communication Settings.
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 11:27:51,502 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 11:27:51,506 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 11:27:51,506 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 11:27:51,507 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 11:27:51,507 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 11:27:51,508 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM1, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 11:27:51,514 - utils.serial_handler - WARNING - [serial_handler.py:62] - Configured port COM1 not available on system
+2026-01-21 11:27:51,525 - utils.serial_handler - ERROR - [serial_handler.py:72] - Configured port 'COM1' is not available on this system.
+
+[SUGGESTION] Use COM17 instead and save in Communication Settings.
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:27:51,526 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 11:27:51,527 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 11:27:51,527 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Configured port 'COM1' is not available on this system.
+
+[SUGGESTION] Use COM17 instead and save in Communication Settings.
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:27:51,528 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 73, in connect
+    raise Exception(error_msg)
+Exception: Configured port 'COM1' is not available on this system.
+
+[SUGGESTION] Use COM17 instead and save in Communication Settings.
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 11:29:09,646 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 11:29:11,490 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 11:29:11,491 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 11:29:11,492 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 11:29:11,492 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 11:29:11,493 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 11:29:11,494 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 11:29:11,501 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 11:29:11,502 - utils.serial_handler - ERROR - [serial_handler.py:108] - Serial connection failed: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+2026-01-21 11:29:11,514 - utils.serial_handler - ERROR - [serial_handler.py:111] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:29:11,516 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 11:29:11,518 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 11:29:11,518 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 11:29:11,522 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 92, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 113, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 11:29:11,532 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 11:29:26,765 - ui.start_test - INFO - [start_test.py:506] - Opening Communication Settings window
+2026-01-21 11:29:38,256 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 11:29:38,257 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 11:29:38,257 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 11:29:38,257 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 11:29:38,257 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 11:29:38,262 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 11:29:38,269 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 11:29:38,292 - utils.serial_handler - INFO - [serial_handler.py:104] - Background read thread started
+2026-01-21 11:29:38,298 - ui.start_test - INFO - [start_test.py:221] - Manual entry fields disabled - reading from serial
+2026-01-21 11:29:46,664 - ui.start_test - INFO - [start_test.py:369] - CLICK: run_test button
+2026-01-21 11:29:46,665 - ui.start_test - INFO - [start_test.py:372] - PCB ID entered: 235
+2026-01-21 11:29:46,666 - ui.start_test - INFO - [start_test.py:379] - Starting test for PCB: 235, Serial Mode: True
+2026-01-21 11:29:46,666 - ui.start_test - INFO - [start_test.py:384] - Reading test data from serial...
+2026-01-21 12:03:41,800 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 12:05:05,566 - __main__ - INFO - [main.py:34] - Application closed
+2026-01-21 12:08:29,375 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 12:08:29,375 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 12:08:29,376 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 12:08:29,376 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 12:08:29,571 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 12:08:29,571 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 12:08:29,572 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 12:08:29,572 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 12:08:29,572 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 12:08:29,572 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 12:08:29,575 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 12:08:29,577 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 12:08:29,577 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 12:08:29,577 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 12:08:29,628 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 12:09:15,528 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 12:09:42,125 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 12:09:42,126 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 12:09:42,127 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 12:09:42,127 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 12:09:42,128 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 12:09:42,130 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 12:09:42,141 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 12:09:42,161 - utils.serial_handler - INFO - [serial_handler.py:104] - Background read thread started
+2026-01-21 12:09:42,170 - ui.start_test - INFO - [start_test.py:221] - Manual entry fields disabled - reading from serial
+2026-01-21 12:09:46,362 - ui.start_test - INFO - [start_test.py:410] - CLICK: run_test button
+2026-01-21 12:09:46,370 - ui.start_test - INFO - [start_test.py:413] - PCB ID entered: 235
+2026-01-21 12:09:46,371 - ui.start_test - INFO - [start_test.py:420] - Starting test for PCB: 235, Serial Mode: True
+2026-01-21 12:09:46,371 - ui.start_test - INFO - [start_test.py:425] - Reading test data from serial...
+2026-01-21 12:09:46,388 - utils.serial_handler - INFO - [serial_handler.py:178] - Reading test data from PCB...
+2026-01-21 12:09:57,245 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 235, Parameter: voltage, Value: 4.4
+2026-01-21 12:09:57,745 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 235, Parameter: resistance, Value: 1.0
+2026-01-21 12:09:58,253 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 235, Parameter: current, Value: 0.0
+2026-01-21 12:09:58,253 - utils.serial_handler - INFO - [serial_handler.py:211] - All test data received: {'voltage': 4.4, 'resistance': 1.0, 'current': 0.0}
+2026-01-21 12:09:58,253 - ui.start_test - INFO - [start_test.py:433] - Serial data received: V=4.4, C=0.0, R=1.0
+2026-01-21 12:15:07,460 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 12:15:12,266 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 12:15:12,267 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 12:15:12,268 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 12:15:12,268 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 12:15:12,269 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 12:15:12,271 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 12:15:12,276 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 12:15:12,281 - utils.serial_handler - ERROR - [serial_handler.py:108] - Serial connection failed: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+2026-01-21 12:15:12,287 - utils.serial_handler - ERROR - [serial_handler.py:111] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:12,287 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 12:15:12,287 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 12:15:12,288 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:12,290 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 92, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 113, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 12:15:12,292 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 12:15:13,630 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 12:15:13,633 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 12:15:13,633 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 12:15:13,634 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 12:15:13,634 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 12:15:13,635 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 12:15:13,643 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 12:15:13,643 - utils.serial_handler - ERROR - [serial_handler.py:108] - Serial connection failed: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+2026-01-21 12:15:13,651 - utils.serial_handler - ERROR - [serial_handler.py:111] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:13,655 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 12:15:13,655 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 12:15:13,655 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:13,657 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 92, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 113, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 12:15:13,659 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 12:15:14,951 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 12:15:14,952 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 12:15:14,952 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 12:15:14,952 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 12:15:14,953 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 12:15:14,954 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 12:15:14,961 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 12:15:14,961 - utils.serial_handler - ERROR - [serial_handler.py:108] - Serial connection failed: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+2026-01-21 12:15:14,970 - utils.serial_handler - ERROR - [serial_handler.py:111] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:14,971 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 12:15:14,971 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 12:15:14,972 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:14,974 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 92, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 113, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 12:15:14,978 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 12:15:15,782 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 12:15:15,783 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 12:15:15,783 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 12:15:15,783 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 12:15:15,784 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 12:15:15,784 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 12:15:15,788 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 12:15:15,788 - utils.serial_handler - ERROR - [serial_handler.py:108] - Serial connection failed: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+2026-01-21 12:15:15,792 - utils.serial_handler - ERROR - [serial_handler.py:111] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:15,792 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 12:15:15,792 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 12:15:15,793 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:15,795 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 92, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 113, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 12:15:15,797 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 12:15:16,481 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 12:15:16,482 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 12:15:16,482 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 12:15:16,482 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 12:15:16,482 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 12:15:16,483 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 12:15:16,489 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 12:15:16,490 - utils.serial_handler - ERROR - [serial_handler.py:108] - Serial connection failed: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+2026-01-21 12:15:16,495 - utils.serial_handler - ERROR - [serial_handler.py:111] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:16,495 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 12:15:16,497 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 12:15:16,497 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:16,500 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 92, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 113, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 12:15:16,505 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 12:15:32,671 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 12:15:32,673 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 12:15:32,673 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 12:15:32,674 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 12:15:32,674 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 12:15:32,675 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 12:15:32,680 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 12:15:32,680 - utils.serial_handler - ERROR - [serial_handler.py:108] - Serial connection failed: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+2026-01-21 12:15:32,684 - utils.serial_handler - ERROR - [serial_handler.py:111] - Available ports: COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:32,684 - ui.start_test - ERROR - [start_test.py:225] - ERROR: Serial connection failed
+2026-01-21 12:15:32,684 - ui.start_test - ERROR - [start_test.py:226] - Exception Type: Exception
+2026-01-21 12:15:32,685 - ui.start_test - ERROR - [start_test.py:227] - Error Message: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+2026-01-21 12:15:32,686 - ui.start_test - ERROR - [start_test.py:228] - Traceback:
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 92, in connect
+    self.serial_port = serial.Serial(
+                       ~~~~~~~~~~~~~^
+        port=port,
+        ^^^^^^^^^^
+    ...<4 lines>...
+        timeout=float(timeout) if timeout else 5.0
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    )
+    ^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 33, in __init__
+    super(Serial, self).__init__(*args, **kwargs)
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialutil.py", line 244, in __init__
+    self.open()
+    ~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\.venv\Lib\site-packages\serial\serialwin32.py", line 64, in open
+    raise SerialException("could not open port {!r}: {!r}".format(self.portstr, ctypes.WinError()))
+serial.serialutil.SerialException: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\ui\start_test.py", line 212, in toggle_serial
+    self.serial_handler.connect()
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~^^
+  File "A:\website-active1\Forbes-Marshall-Industry-Project\Forbes Marshall\utils\serial_handler.py", line 113, in connect
+    raise Exception(error_msg)
+Exception: Failed to connect to COM17: could not open port 'COM17': PermissionError(13, 'Access is denied.', None, 5)
+
+Available ports:
+COM17 (com0com - serial port emulator (COM17))
+COM18 (com0com - serial port emulator (COM18))
+
+2026-01-21 12:15:32,692 - ui.start_test - INFO - [start_test.py:239] - Showing ports error dialog
+2026-01-21 12:15:46,932 - __main__ - INFO - [main.py:34] - Application closed
+2026-01-21 12:16:21,973 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 12:16:21,973 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 12:16:21,973 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 12:16:21,974 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 12:16:22,192 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 12:16:22,193 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 12:16:22,193 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 12:16:22,193 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 12:16:22,194 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 12:16:22,194 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 12:16:22,194 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 12:16:22,195 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 12:16:22,195 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 12:16:22,195 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 12:16:22,228 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 12:16:43,547 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 12:16:53,292 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 12:16:53,294 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 12:16:53,295 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 12:16:53,295 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 12:16:53,296 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 12:16:53,298 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 12:16:53,311 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 12:16:53,337 - utils.serial_handler - INFO - [serial_handler.py:104] - Background read thread started
+2026-01-21 12:16:53,344 - ui.start_test - INFO - [start_test.py:221] - Manual entry fields disabled - reading from serial
+2026-01-21 12:16:56,988 - ui.start_test - INFO - [start_test.py:410] - CLICK: run_test button
+2026-01-21 12:16:56,990 - ui.start_test - INFO - [start_test.py:413] - PCB ID entered: 235
+2026-01-21 12:16:56,994 - ui.start_test - INFO - [start_test.py:420] - Starting test for PCB: 235, Serial Mode: True
+2026-01-21 12:16:57,014 - ui.start_test - INFO - [start_test.py:425] - Reading test data from serial...
+2026-01-21 12:16:57,024 - utils.serial_handler - INFO - [serial_handler.py:178] - Reading test data from PCB...
+2026-01-21 12:17:02,746 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 235, Parameter: voltage, Value: 4.6
+2026-01-21 12:17:03,249 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 235, Parameter: current, Value: 0.1
+2026-01-21 12:17:03,751 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 235, Parameter: resistance, Value: 100.0
+2026-01-21 12:17:03,751 - utils.serial_handler - INFO - [serial_handler.py:211] - All test data received: {'voltage': 4.6, 'current': 0.1, 'resistance': 100.0}
+2026-01-21 12:17:03,752 - ui.start_test - INFO - [start_test.py:433] - Serial data received: V=4.6, C=0.1, R=100.0
+2026-01-21 12:17:03,766 - ui.start_test - INFO - [start_test.py:492] - Test result saved with ID: 6
+2026-01-21 12:17:03,789 - ui.start_test - INFO - [start_test.py:508] - Stage result saved: V=4.6, C=0.1, R=100.0
+2026-01-21 12:18:08,828 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 12:18:11,507 - ui.advanced_test - INFO - [advanced_test.py:19] - Initializing AdvancedTestWindow
+2026-01-21 12:18:29,992 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 12:18:29,992 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 12:18:29,992 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 12:18:29,993 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 12:18:30,229 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 12:18:30,230 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 12:18:30,231 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 12:18:30,232 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 12:18:30,232 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 12:18:30,232 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 12:18:30,232 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 12:18:30,235 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 12:18:30,238 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 12:18:30,238 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 12:18:30,271 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 12:18:54,521 - ui.advanced_test - INFO - [advanced_test.py:19] - Initializing AdvancedTestWindow
+2026-01-21 12:19:33,562 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 12:19:39,733 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 12:19:39,734 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 12:19:39,735 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 12:19:39,735 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 12:19:39,735 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 12:19:39,737 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 12:19:39,742 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 12:19:39,771 - utils.serial_handler - INFO - [serial_handler.py:104] - Background read thread started
+2026-01-21 12:19:39,777 - ui.start_test - INFO - [start_test.py:221] - Manual entry fields disabled - reading from serial
+2026-01-21 12:19:43,504 - ui.start_test - INFO - [start_test.py:410] - CLICK: run_test button
+2026-01-21 12:19:43,506 - ui.start_test - INFO - [start_test.py:413] - PCB ID entered: 235
+2026-01-21 12:19:43,506 - ui.start_test - INFO - [start_test.py:420] - Starting test for PCB: 235, Serial Mode: True
+2026-01-21 12:19:43,507 - ui.start_test - INFO - [start_test.py:425] - Reading test data from serial...
+2026-01-21 12:19:43,520 - utils.serial_handler - INFO - [serial_handler.py:178] - Reading test data from PCB...
+2026-01-21 12:19:46,744 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 235, Parameter: voltage, Value: 4.6
+2026-01-21 12:19:47,237 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 235, Parameter: current, Value: 0.1
+2026-01-21 12:19:47,744 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 235, Parameter: resistance, Value: 100.0
+2026-01-21 12:19:47,744 - utils.serial_handler - INFO - [serial_handler.py:211] - All test data received: {'voltage': 4.6, 'current': 0.1, 'resistance': 100.0}
+2026-01-21 12:19:47,745 - ui.start_test - INFO - [start_test.py:433] - Serial data received: V=4.6, C=0.1, R=100.0
+2026-01-21 12:19:47,754 - ui.start_test - INFO - [start_test.py:492] - Test result saved with ID: 7
+2026-01-21 12:19:47,758 - ui.start_test - INFO - [start_test.py:508] - Stage result saved: V=4.6, C=0.1, R=100.0
+2026-01-21 12:22:33,440 - ui.advanced_test - INFO - [advanced_test.py:19] - Initializing AdvancedTestWindow
+2026-01-21 12:22:34,426 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 12:23:24,195 - ui.advanced_test - INFO - [advanced_test.py:19] - Initializing AdvancedTestWindow
+2026-01-21 12:23:42,083 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 12:24:33,543 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 12:24:33,543 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 12:24:33,544 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 12:24:33,544 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 12:24:33,721 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 12:24:33,722 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 12:24:33,722 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 12:24:33,722 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 12:24:33,722 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 12:24:33,722 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 12:24:33,722 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 12:24:33,723 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 12:24:33,723 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 12:24:33,723 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 12:24:33,754 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 12:24:59,420 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 12:25:01,375 - ui.advanced_test - INFO - [advanced_test.py:19] - Initializing AdvancedTestWindow
+2026-01-21 12:25:03,202 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 17:42:21,038 - ui.advanced_test - INFO - [advanced_test.py:19] - Initializing AdvancedTestWindow
+2026-01-21 17:42:27,688 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 17:42:30,063 - ui.advanced_test - INFO - [advanced_test.py:19] - Initializing AdvancedTestWindow
+2026-01-21 17:45:52,638 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 17:45:52,638 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 17:45:52,638 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 17:45:52,639 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 17:45:52,974 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 17:45:52,974 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 17:45:52,974 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 17:45:52,975 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 17:45:52,975 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 17:45:52,975 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 17:45:52,975 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 17:45:52,976 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 17:45:52,977 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 17:45:52,977 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 17:45:53,031 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 17:51:10,959 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 17:51:10,960 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 17:51:10,960 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 17:51:10,960 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 17:51:11,274 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 17:51:11,277 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 17:51:11,278 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 17:51:11,278 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 17:51:11,279 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 17:51:11,280 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 17:51:11,280 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 17:51:11,282 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 17:51:11,282 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 17:51:11,282 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 17:51:11,357 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 17:55:47,798 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 17:55:47,799 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 17:55:47,799 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 17:55:47,799 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 17:55:48,100 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-01-21 17:55:48,101 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-01-21 17:55:48,101 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-01-21 17:55:48,102 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-01-21 17:55:48,102 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-01-21 17:55:48,102 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-01-21 17:55:48,103 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-01-21 17:55:48,104 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-01-21 17:55:48,104 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-01-21 17:55:48,105 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-01-21 17:55:48,164 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 17:56:24,400 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 17:56:37,378 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 17:56:55,896 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 17:56:55,897 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 17:56:55,898 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 17:56:55,898 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 17:56:55,899 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 17:56:55,917 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 17:56:55,926 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 17:56:55,952 - utils.serial_handler - INFO - [serial_handler.py:104] - Background read thread started
+2026-01-21 17:56:55,960 - ui.start_test - INFO - [start_test.py:221] - Manual entry fields disabled - reading from serial
+2026-01-21 18:00:21,288 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 0
+2026-01-21 18:00:21,289 - ui.start_test - INFO - [start_test.py:246] - Disconnecting from serial port...
+2026-01-21 18:00:21,309 - ui.start_test - INFO - [start_test.py:256] - Manual entry fields enabled
+2026-01-21 18:01:10,130 - __main__ - INFO - [main.py:34] - Application closed
+2026-01-21 18:02:32,081 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-01-21 18:02:32,082 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-01-21 18:02:32,083 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-01-21 18:02:32,085 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-01-21 18:02:32,452 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'IHDR' 16 13
+2026-01-21 18:02:32,452 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'cHRM' 41 32
+2026-01-21 18:02:32,453 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'PLTE' 85 768
+2026-01-21 18:02:32,453 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'tRNS' 865 255
+2026-01-21 18:02:32,453 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'tIME' 1132 7
+2026-01-21 18:02:32,453 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:753] - b'tIME' 1132 7 (unknown)
+2026-01-21 18:02:32,453 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'IDAT' 1151 12335
+2026-01-21 18:02:32,456 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'tEXt' 13498 37
+2026-01-21 18:02:32,456 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'tEXt' 13547 37
+2026-01-21 18:02:32,456 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'tEXt' 13596 40
+2026-01-21 18:02:32,514 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-01-21 18:02:48,246 - ui.start_test - INFO - [start_test.py:20] - Initializing StartTestWindow for user: admin
+2026-01-21 18:02:52,933 - ui.start_test - INFO - [start_test.py:207] - CLICK: toggle_serial - Serial switch value: 1
+2026-01-21 18:02:52,934 - ui.start_test - INFO - [start_test.py:211] - Attempting to connect to serial port...
+2026-01-21 18:02:52,935 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-01-21 18:02:52,935 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-01-21 18:02:52,935 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-01-21 18:02:52,938 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-01-21 18:02:52,950 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-01-21 18:02:52,989 - utils.serial_handler - INFO - [serial_handler.py:104] - Background read thread started
+2026-01-21 18:02:52,997 - ui.start_test - INFO - [start_test.py:221] - Manual entry fields disabled - reading from serial
+2026-01-21 18:03:01,615 - ui.start_test - INFO - [start_test.py:416] - CLICK: run_test button
+2026-01-21 18:03:01,616 - ui.start_test - INFO - [start_test.py:419] - PCB ID entered: 21012026001
+2026-01-21 18:03:01,617 - ui.start_test - INFO - [start_test.py:426] - Starting test for PCB: 21012026001, Serial Mode: True
+2026-01-21 18:03:01,620 - ui.start_test - INFO - [start_test.py:431] - Reading test data from serial...
+2026-01-21 18:03:01,658 - utils.serial_handler - INFO - [serial_handler.py:178] - Reading test data from PCB...
+2026-01-21 18:03:05,002 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 21012026001, Parameter: voltage, Value: 5.5
+2026-01-21 18:03:05,496 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 21012026001, Parameter: current, Value: 3.0
+2026-01-21 18:03:06,003 - utils.serial_handler - INFO - [serial_handler.py:199] - Parsed - PCB ID: 21012026001, Parameter: resistance, Value: 130.0
+2026-01-21 18:03:06,004 - utils.serial_handler - INFO - [serial_handler.py:211] - All test data received: {'voltage': 5.5, 'current': 3.0, 'resistance': 130.0}
+2026-01-21 18:03:06,005 - ui.start_test - INFO - [start_test.py:439] - Serial data received: V=5.5, C=3.0, R=130.0
+2026-01-21 18:03:06,020 - ui.start_test - INFO - [start_test.py:498] - Test result saved with ID: 8
+2026-01-21 18:03:06,030 - ui.start_test - INFO - [start_test.py:539] - Stage result saved successfully with ID 10: V=5.5, C=3.0, R=130.0
+2026-01-21 23:42:39,752 - __main__ - INFO - [main.py:34] - Application closed

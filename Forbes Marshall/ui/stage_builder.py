@@ -353,6 +353,12 @@ class StageBuilderWindow(ctk.CTkFrame):
         details_window.title(f"Sequence: {sequence['name']}")
         details_window.geometry("600x500")
         
+        # Make window appear on top
+        details_window.attributes('-topmost', True)
+        details_window.lift()
+        details_window.focus_force()
+        details_window.grab_set()
+        
         # Center window
         details_window.update_idletasks()
         x = (details_window.winfo_screenwidth() // 2) - 300

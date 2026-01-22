@@ -166,6 +166,18 @@ class ResultsHistoryWindow(ctk.CTkFrame):
             result_frame = ctk.CTkFrame(self.results_scroll)
             result_frame.pack(pady=2, padx=5, fill="x")
             
+            # Get stage results for measured values
+            stage_results = self.db.get_stage_results(result['id'])
+            voltage_val = None
+            current_val = None
+            resistance_val = None
+            
+            if stage_results and len(stage_results) > 0:
+                first_stage = stage_results[0]
+                voltage_val = first_stage.get('voltage_measured')
+                current_val = first_stage.get('current_measured')
+                resistance_val = first_stage.get('resistance_measured')
+            
             # PCB ID
             pcb_id: str = str(result.get('pcb_serial_number', 'N/A'))
             ctk.CTkLabel(result_frame, text=pcb_id, width=100).pack(side="left", padx=5)
@@ -186,19 +198,20 @@ class ResultsHistoryWindow(ctk.CTkFrame):
             ).pack(side="left", padx=5)
             
             # Voltage
-            start_time: str = str(result.get('start_time', 'N/A'))
-            ctk.CTkLabel(result_frame, text=start_time, width=150).pack(side="left", padx=5)
+            voltage_str = f"{voltage_val:.2f}V" if voltage_val is not None else "N/A"
+            ctk.CTkLabel(result_frame, text=voltage_str, width=80).pack(side="left", padx=5)
             
             # Current
-            current: str = str(result.get('overall_pass', 'N/A'))
-            ctk.CTkLabel(result_frame, text=f"{current}A", width=80).pack(side="left", padx=5)
+            current_str = f"{current_val:.2f}A" if current_val is not None else "N/A"
+            ctk.CTkLabel(result_frame, text=current_str, width=80).pack(side="left", padx=5)
             
             # Resistance
-            ctk.CTkLabel(result_frame, text="N/A", width=100).pack(side="left", padx=5)
+            resistance_str = f"{resistance_val:.2f}Ω" if resistance_val is not None else "N/A"
+            ctk.CTkLabel(result_frame, text=resistance_str, width=100).pack(side="left", padx=5)
             
             # Date/Time
-            end_time: str = str(result.get('end_time', 'N/A'))
-            ctk.CTkLabel(result_frame, text=end_time, width=150).pack(side="left", padx=5)
+            date_time: str = str(result.get('start_time', 'N/A'))
+            ctk.CTkLabel(result_frame, text=date_time, width=150).pack(side="left", padx=5)
             
             # View details button
             view_btn = ctk.CTkButton(
@@ -214,6 +227,12 @@ class ResultsHistoryWindow(ctk.CTkFrame):
         details_window: ctk.CTkToplevel = ctk.CTkToplevel(self)
         details_window.title("Test Result Details")
         details_window.geometry("500x600")
+        
+        # Make window appear on top
+        details_window.attributes('-topmost', True)
+        details_window.lift()
+        details_window.focus_force()
+        details_window.grab_set()
         
         # Center window
         details_window.update_idletasks()
@@ -241,27 +260,38 @@ class ResultsHistoryWindow(ctk.CTkFrame):
         details_text += "Test Parameters:\n"
         
         # Get average/first stage measurements if available
-        if stage_results:
-            voltages = [s.get('voltage_measured', 0) for s in stage_results]
-            currents = [s.get('current_measured', 0) for s in stage_results]
-            resistances = [s.get('resistance_measured', 0) for s in stage_results]
+        if stage_results and len(stage_results) > 0:
+            # Get first stage result for display
+            first_stage = stage_results[0]
+            voltage = first_stage.get('voltage_measured')
+            current = first_stage.get('current_measured')
+            resistance = first_stage.get('resistance_measured')
             
-            avg_voltage = sum(voltages) / len(voltages) if voltages else 0
-            avg_current = sum(currents) / len(currents) if currents else 0
-            avg_resistance = sum(resistances) / len(resistances) if resistances else 0
+            # Format with proper defaults
+            voltage_str = f"{voltage:.2f}V" if voltage is not None else "N/A"
+            current_str = f"{current:.2f}A" if current is not None else "N/A"
+            resistance_str = f"{resistance:.2f}Ω" if resistance is not None else "N/A"
             
-            details_text += f"  Voltage: {avg_voltage:.2f}V\n"
-            details_text += f"  Current: {avg_current:.2f}A\n"
-            details_text += f"  Resistance: {avg_resistance:.2f}Ω\n"
+            details_text += f"  Voltage: {voltage_str}\n"
+            details_text += f"  Current: {current_str}\n"
+            details_text += f"  Resistance: {resistance_str}\n"
             
-            # Add individual stage details
-            details_text += "\nStage Details:\n"
-            for idx, stage_result in enumerate(stage_results, 1):
-                details_text += f"  Stage {idx}:\n"
-                details_text += f"    Voltage: {stage_result.get('voltage_measured', 'N/A')} V\n"
-                details_text += f"    Current: {stage_result.get('current_measured', 'N/A')} A\n"
-                details_text += f"    Resistance: {stage_result.get('resistance_measured', 'N/A')} Ω\n"
-                details_text += f"    Status: {stage_result.get('status', 'N/A')}\n"
+            # Add individual stage details if multiple stages
+            if len(stage_results) > 1:
+                details_text += "\nStage Details:\n"
+                for idx, stage_result in enumerate(stage_results, 1):
+                    v = stage_result.get('voltage_measured')
+                    c = stage_result.get('current_measured')
+                    r = stage_result.get('resistance_measured')
+                    v_str = f"{v:.2f}" if v is not None else "N/A"
+                    c_str = f"{c:.2f}" if c is not None else "N/A"
+                    r_str = f"{r:.2f}" if r is not None else "N/A"
+                    
+                    details_text += f"  Stage {idx}:\n"
+                    details_text += f"    Voltage: {v_str} V\n"
+                    details_text += f"    Current: {c_str} A\n"
+                    details_text += f"    Resistance: {r_str} Ω\n"
+                    details_text += f"    Status: {stage_result.get('status', 'N/A')}\n"
         else:
             details_text += "  Voltage: N/A\n"
             details_text += "  Current: N/A\n"
@@ -311,8 +341,36 @@ class ResultsHistoryWindow(ctk.CTkFrame):
         try:
             with open(filename, 'w', newline='', encoding='utf-8') as csvfile:
                 writer = csv.writer(csvfile)
-                writer.writerow(['ID', 'PCB ID', 'Tester', 'Status', 'Voltage (V)', 'Current (A)', 'Resistance (Ω)', 'Notes', 'Date/Time'])
-                writer.writerows(results)
+                writer.writerow(['Test ID', 'PCB ID', 'Tester ID', 'Status', 'Voltage (V)', 'Current (A)', 'Resistance (Ω)', 'Notes', 'Test Date/Time'])
+                
+                # Write each result with measured values
+                for result in results:
+                    # Get stage results for measured values
+                    stage_results = self.db.get_stage_results(result['id'])
+                    voltage_val = "N/A"
+                    current_val = "N/A"
+                    resistance_val = "N/A"
+                    
+                    if stage_results and len(stage_results) > 0:
+                        first_stage = stage_results[0]
+                        v = first_stage.get('voltage_measured')
+                        c = first_stage.get('current_measured')
+                        r = first_stage.get('resistance_measured')
+                        voltage_val = f"{v:.2f}" if v is not None else "N/A"
+                        current_val = f"{c:.2f}" if c is not None else "N/A"
+                        resistance_val = f"{r:.2f}" if r is not None else "N/A"
+                    
+                    writer.writerow([
+                        result['id'],
+                        result.get('pcb_serial_number', 'N/A'),
+                        result.get('user_id', 'N/A'),
+                        result.get('status', 'N/A'),
+                        voltage_val,
+                        current_val,
+                        resistance_val,
+                        result.get('notes', ''),
+                        result.get('start_time', 'N/A')
+                    ])
             
             messagebox.showinfo("Success", f"Results exported to:\n{filename}")
         except Exception as e:
