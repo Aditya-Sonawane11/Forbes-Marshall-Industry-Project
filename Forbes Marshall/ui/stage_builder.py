@@ -3,18 +3,23 @@ Stage Builder Window - Create multi-stage test sequences
 """
 import customtkinter as ctk
 from tkinter import messagebox
+import logging
 from data.database import Database, DBRecord
 from typing import List, Optional
+
+# Set up logger for this module
+logger = logging.getLogger(__name__)
 
 class StageBuilderWindow(ctk.CTkFrame):
     def __init__(self, parent: ctk.CTkFrame, username: str, role: str, is_embedded: bool = False) -> None:
         super().__init__(parent)
-        
+
+        logger.info(f"Initializing StageBuilderWindow for user: {username}, role: {role}")
         self.username: str = username
         self.role: str = role
         self.db: Database = Database()
         self.stages: List[DBRecord] = []
-        
+
         self.center_window()
         self.create_widgets()
         self.load_sequences()
@@ -137,16 +142,35 @@ class StageBuilderWindow(ctk.CTkFrame):
         
         self.stages_list_frame = ctk.CTkScrollableFrame(left_frame, height=150)
         self.stages_list_frame.pack(pady=5, padx=20, fill="both")
-        
-        # Save sequence button
+
+        # Action buttons frame
+        action_frame = ctk.CTkFrame(left_frame)
+        action_frame.pack(pady=15, padx=20, fill="x")
+
+        # Save sequence button (more prominent)
         save_seq_btn = ctk.CTkButton(
-            left_frame,
-            text="Save Sequence",
-            width=200,
-            height=40,
+            action_frame,
+            text="💾 Save Test Sequence",
+            width=250,
+            height=45,
+            font=ctk.CTkFont(size=14, weight="bold"),
+            fg_color="#28a745",
+            hover_color="#218838",
             command=self.save_sequence
         )
-        save_seq_btn.pack(pady=10)
+        save_seq_btn.pack(pady=5)
+
+        # Clear all button
+        clear_btn = ctk.CTkButton(
+            action_frame,
+            text="Clear All Stages",
+            width=200,
+            height=35,
+            fg_color="#6c757d",
+            hover_color="#5a6268",
+            command=self.clear_all_stages
+        )
+        clear_btn.pack(pady=(5, 0))
         
         # Right side - Saved sequences
         right_frame = ctk.CTkFrame(content_frame)
@@ -176,11 +200,12 @@ class StageBuilderWindow(ctk.CTkFrame):
     def add_stage(self):
         """Add a stage to the current sequence"""
         stage_name = self.stage_name_entry.get().strip()
-        
+        logger.info(f"Adding stage: {stage_name}")
+
         if not stage_name:
             messagebox.showerror("Error", "Please enter stage name")
             return
-        
+
         try:
             v_min = float(self.stage_v_min.get())
             v_max = float(self.stage_v_max.get())
@@ -191,7 +216,23 @@ class StageBuilderWindow(ctk.CTkFrame):
         except ValueError:
             messagebox.showerror("Error", "Please enter valid numeric values")
             return
-        
+
+        # Validate ranges (min should not exceed max)
+        if v_min > v_max:
+            messagebox.showerror("Error", "Voltage minimum cannot exceed maximum")
+            return
+        if c_min > c_max:
+            messagebox.showerror("Error", "Current minimum cannot exceed maximum")
+            return
+        if r_min > r_max:
+            messagebox.showerror("Error", "Resistance minimum cannot exceed maximum")
+            return
+
+        # Validate non-negative values
+        if v_min < 0 or c_min < 0 or r_min < 0:
+            messagebox.showerror("Error", "Values cannot be negative")
+            return
+
         stage = {
             'name': stage_name,
             'voltage_min': v_min,
@@ -201,8 +242,9 @@ class StageBuilderWindow(ctk.CTkFrame):
             'resistance_min': r_min,
             'resistance_max': r_max
         }
-        
+
         self.stages.append(stage)
+        logger.info(f"Stage added successfully: {stage_name}. Total stages: {len(self.stages)}")
         self.update_stages_list()
         self.clear_stage_fields()
     
@@ -260,35 +302,94 @@ class StageBuilderWindow(ctk.CTkFrame):
         """Remove a stage from the sequence"""
         self.stages.pop(index)
         self.update_stages_list()
-    
+
+    def clear_all_stages(self):
+        """Clear all stages from the current sequence"""
+        if self.stages:
+            if messagebox.askyesno("Confirm", "Are you sure you want to clear all stages?"):
+                self.stages.clear()
+                self.update_stages_list()
+                messagebox.showinfo("Cleared", "All stages have been cleared.")
+        else:
+            messagebox.showinfo("Info", "No stages to clear.")
+
     def save_sequence(self):
         """Save the test sequence"""
         sequence_name = self.sequence_name_entry.get().strip()
         pcb_type = self.pcb_type_entry.get().strip()
-        
+
         if not sequence_name:
-            messagebox.showerror("Error", "Please enter sequence name")
+            messagebox.showerror("Validation Error", "Please enter a sequence name")
+            self.sequence_name_entry.focus()
             return
-        
+
         if not pcb_type:
-            messagebox.showerror("Error", "Please enter PCB type")
+            messagebox.showerror("Validation Error", "Please enter a PCB type")
+            self.pcb_type_entry.focus()
             return
-        
+
         if not self.stages:
-            messagebox.showerror("Error", "Please add at least one stage")
+            messagebox.showerror("Validation Error", "Please add at least one test stage")
             return
-        
-        success = self.db.save_test_sequence(sequence_name, pcb_type, self.stages, self.username)
-        
-        if success:
-            messagebox.showinfo("Success", f"Test sequence '{sequence_name}' saved successfully!")
-            self.sequence_name_entry.delete(0, 'end')
-            self.pcb_type_entry.delete(0, 'end')
-            self.stages = []
-            self.update_stages_list()
-            self.load_sequences()
-        else:
-            messagebox.showerror("Error", "Failed to save sequence")
+
+        # Show saving notification
+        saving_window = ctk.CTkToplevel(self)
+        saving_window.title("Saving...")
+        saving_window.geometry("300x100")
+        saving_window.resizable(False, False)
+
+        # Center the saving window
+        saving_window.update_idletasks()
+        x = (saving_window.winfo_screenwidth() // 2) - 150
+        y = (saving_window.winfo_screenheight() // 2) - 50
+        saving_window.geometry(f"300x100+{x}+{y}")
+
+        ctk.CTkLabel(
+            saving_window,
+            text="Saving test sequence...",
+            font=ctk.CTkFont(size=14)
+        ).pack(expand=True)
+
+        # Update the UI before saving
+        self.update()
+        saving_window.update()
+
+        try:
+            success = self.db.save_test_sequence(sequence_name, pcb_type, self.stages, self.username)
+            logger.info(f"Save sequence result: {success} for sequence '{sequence_name}' with {len(self.stages)} stages")
+
+            # Close saving window
+            saving_window.destroy()
+
+            if success:
+                logger.info(f"Successfully saved test sequence: {sequence_name}")
+                messagebox.showinfo(
+                    "Success",
+                    f"Test sequence '{sequence_name}' saved successfully!\n\n"
+                    f"Stages: {len(self.stages)}\n"
+                    f"PCB Type: {pcb_type}"
+                )
+
+                # Clear form after successful save
+                self.sequence_name_entry.delete(0, 'end')
+                self.pcb_type_entry.delete(0, 'end')
+                self.stages = []
+                self.update_stages_list()
+                self.load_sequences()
+            else:
+                logger.error(f"Failed to save test sequence: {sequence_name}")
+                messagebox.showerror("Error", "Failed to save sequence. Please check the logs for details.")
+
+        except Exception as e:
+            logger.error(f"Exception occurred while saving sequence '{sequence_name}': {e}")
+            # Close saving window if still open
+            try:
+                saving_window.destroy()
+            except:
+                pass
+
+            messagebox.showerror("Error", f"An error occurred while saving:\n{str(e)}")
+            print(f"Save sequence error: {e}")
     
     def load_sequences(self):
         """Load and display saved sequences"""
@@ -416,7 +517,22 @@ class StageBuilderWindow(ctk.CTkFrame):
     
     def delete_sequence(self, seq_id):
         """Delete a test sequence"""
-        if messagebox.askyesno("Confirm", "Are you sure you want to delete this sequence?"):
-            self.db.delete_test_sequence(seq_id)
-            self.load_sequences()
-            messagebox.showinfo("Success", "Sequence deleted")
+        logger.info(f"Attempting to delete sequence with ID: {seq_id}")
+
+        if messagebox.askyesno("Confirm Delete", "Are you sure you want to delete this test sequence?\n\nThis action cannot be undone and will remove all associated test results."):
+            try:
+                success = self.db.delete_test_sequence(seq_id)
+
+                if success:
+                    logger.info(f"Successfully deleted sequence with ID: {seq_id}")
+                    self.load_sequences()
+                    messagebox.showinfo("Success", "Test sequence deleted successfully!")
+                else:
+                    logger.error(f"Failed to delete sequence with ID: {seq_id}")
+                    messagebox.showerror("Error", "Failed to delete sequence. Please check the logs for details.")
+
+            except Exception as e:
+                logger.error(f"Exception occurred while deleting sequence {seq_id}: {e}")
+                messagebox.showerror("Error", f"An error occurred while deleting:\n{str(e)}")
+        else:
+            logger.info(f"User cancelled deletion of sequence {seq_id}")

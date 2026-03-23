@@ -4,6 +4,7 @@ Results History Window
 import customtkinter as ctk
 from tkinter import messagebox, filedialog
 from data.database import Database, DBRecord
+from config.config import STATUS_PASS, STATUS_FAIL
 import csv
 from datetime import datetime
 from typing import List, Dict, Any
@@ -45,7 +46,7 @@ class ResultsHistoryWindow(ctk.CTkFrame):
         ctk.CTkLabel(filter_frame, text="Filter by Status:").pack(side="left", padx=10)
         self.status_filter = ctk.CTkComboBox(
             filter_frame,
-            values=["All", "PASS", "FAIL"],
+            values=["All", STATUS_PASS, STATUS_FAIL],
             width=150,
             command=self.load_results
         )
@@ -125,34 +126,35 @@ class ResultsHistoryWindow(ctk.CTkFrame):
         # Clear existing
         for widget in self.results_scroll.winfo_children():
             widget.destroy()
-        
+
         # Get filters
         status_filter: str = self.status_filter.get()
         search_query: str = self.search_entry.get().strip()
-        
-        # Get results based on role
-        results: List[DBRecord] = self.db.get_test_results()
+
+        # Get results with measurements in a single query (optimized)
+        results: List[DBRecord] = self.db.get_test_results_with_measurements()
         if self.role == "tester":
-            # Need to get actual username, not just filter by role
-            results = [r for r in results if r.get('user_id') == self.db.get_user_id(self.username)]
-        
+            # Filter by current user
+            user_id = self.db.get_user_id(self.username)
+            results = [r for r in results if r.get('user_id') == user_id]
+
         # Apply filters
         if status_filter != "All":
             results = [r for r in results if r.get('status') == status_filter]
-        
+
         if search_query:
             results = [r for r in results if search_query.lower() in str(r.get('pcb_serial_number', '')).lower()]
-        
+
         # Update stats
         total = len(results)
         passed = len([r for r in results if r['status'] == "Pass"])
         failed = len([r for r in results if r['status'] == "Fail"])
         pass_rate = (passed / total * 100) if total > 0 else 0
-        
+
         self.stats_label.configure(
             text=f"Total Tests: {total} | Passed: {passed} | Failed: {failed} | Pass Rate: {pass_rate:.1f}%"
         )
-        
+
         if not results:
             ctk.CTkLabel(
                 self.results_scroll,
@@ -160,32 +162,25 @@ class ResultsHistoryWindow(ctk.CTkFrame):
                 text_color="gray"
             ).pack(pady=20)
             return
-        
-        # Display results
+
+        # Display results - measurements are already included in results
         for result in results:
             result_frame = ctk.CTkFrame(self.results_scroll)
             result_frame.pack(pady=2, padx=5, fill="x")
-            
-            # Get stage results for measured values
-            stage_results = self.db.get_stage_results(result['id'])
-            voltage_val = None
-            current_val = None
-            resistance_val = None
-            
-            if stage_results and len(stage_results) > 0:
-                first_stage = stage_results[0]
-                voltage_val = first_stage.get('voltage_measured')
-                current_val = first_stage.get('current_measured')
-                resistance_val = first_stage.get('resistance_measured')
-            
+
+            # Get measurements directly from the optimized query result
+            voltage_val = result.get('voltage_measured')
+            current_val = result.get('current_measured')
+            resistance_val = result.get('resistance_measured')
+
             # PCB ID
             pcb_id: str = str(result.get('pcb_serial_number', 'N/A'))
             ctk.CTkLabel(result_frame, text=pcb_id, width=100).pack(side="left", padx=5)
-            
+
             # Tester
             tester_id: str = str(result.get('user_id', 'N/A'))
             ctk.CTkLabel(result_frame, text=tester_id, width=100).pack(side="left", padx=5)
-            
+
             # Status
             status: str = str(result.get('status', 'N/A'))
             status_color = "green" if status == "Pass" else "red"
@@ -196,23 +191,23 @@ class ResultsHistoryWindow(ctk.CTkFrame):
                 text_color=status_color,
                 font=ctk.CTkFont(weight="bold")
             ).pack(side="left", padx=5)
-            
+
             # Voltage
             voltage_str = f"{voltage_val:.2f}V" if voltage_val is not None else "N/A"
             ctk.CTkLabel(result_frame, text=voltage_str, width=80).pack(side="left", padx=5)
-            
+
             # Current
             current_str = f"{current_val:.2f}A" if current_val is not None else "N/A"
             ctk.CTkLabel(result_frame, text=current_str, width=80).pack(side="left", padx=5)
-            
+
             # Resistance
             resistance_str = f"{resistance_val:.2f}Ω" if resistance_val is not None else "N/A"
             ctk.CTkLabel(result_frame, text=resistance_str, width=100).pack(side="left", padx=5)
-            
+
             # Date/Time
             date_time: str = str(result.get('start_time', 'N/A'))
             ctk.CTkLabel(result_frame, text=date_time, width=150).pack(side="left", padx=5)
-            
+
             # View details button
             view_btn = ctk.CTkButton(
                 result_frame,

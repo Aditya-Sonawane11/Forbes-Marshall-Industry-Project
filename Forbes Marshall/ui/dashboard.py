@@ -5,8 +5,9 @@ import customtkinter as ctk
 from tkinter import messagebox
 from PIL import Image, ImageDraw
 import os
+import logging
 from typing import Union, Dict, Any, List
-from config.config import DASHBOARD_WINDOW_SIZE, WINDOW_TITLE, LOGO_PATH, ROLE_ADMIN, ROLE_MANAGER, ROLE_TESTER
+from config.config import DASHBOARD_WINDOW_SIZE, WINDOW_TITLE, LOGO_PATH, ROLE_ADMIN, ROLE_MANAGER, ROLE_TESTER, STATUS_PASS
 from data.database import Database, DBRecord
 from ui.start_test import StartTestWindow
 from ui.test_case_editor import TestCaseEditorWindow
@@ -16,25 +17,33 @@ from ui.advanced_test import AdvancedTestWindow
 from ui.jig_diagram_viewer import JigDiagramViewerWindow
 from ui.communication_config import CommunicationConfigWindow
 
+# Set up logger for this module
+logger = logging.getLogger(__name__)
+
 class Dashboard(ctk.CTkToplevel):
-    def __init__(self, username: str, role: Union[str, Dict[str, Any]], parent) -> None:
+    def __init__(self, username: str, role: Union[str, Dict[str, Any]], parent, session_manager=None) -> None:
         super().__init__(parent)
-        
+
         self.username: str = username
         # Ensure role is a string (handle both dict and string)
         self.role: str = self._extract_role(role)
         self.parent = parent
+        self.session_manager = session_manager
         self.db: Database = Database()
-        
+
         self.title(f"{WINDOW_TITLE} - Dashboard")
         self.geometry(DASHBOARD_WINDOW_SIZE)
-        
+
         # Center window
         self.center_window()
-        
+
         # Handle window close
         self.protocol("WM_DELETE_WINDOW", self.on_closing)
-        
+
+        # Start session monitoring if session manager is provided
+        if self.session_manager:
+            self.start_session_monitoring()
+
         # Create UI
         self.create_widgets()
     
@@ -56,6 +65,102 @@ class Dashboard(ctk.CTkToplevel):
         x: int = (self.winfo_screenwidth() // 2) - (width // 2)
         y: int = (self.winfo_screenheight() // 2) - (height // 2)
         self.geometry(f'{width}x{height}+{x}+{y}')
+
+    def start_session_monitoring(self) -> None:
+        """Start session timeout monitoring"""
+        if self.session_manager:
+            self.check_session_validity()
+
+    def check_session_validity(self) -> None:
+        """Check if session is still valid and schedule next check"""
+        if not self.session_manager:
+            return
+
+        if not self.session_manager.is_session_valid():
+            logger.warning("Session expired, returning to login")
+            self.handle_session_timeout()
+            return
+
+        # Check if we should show warning
+        if self.session_manager.should_show_warning():
+            self.show_session_warning()
+
+        # Update activity
+        self.session_manager.update_activity()
+
+        # Update session display
+        self.update_session_display()
+
+        # Schedule next check in 10 seconds
+        self.after(10000, self.check_session_validity)
+
+    def update_session_display(self) -> None:
+        """Update session information in the header"""
+        if not self.session_manager or not hasattr(self, 'session_label'):
+            return
+
+        session_info = self.session_manager.get_session_info()
+        if session_info:
+            time_remaining = session_info['time_remaining_seconds']
+            minutes = time_remaining // 60
+            session_text = f"Session: {minutes}m left"
+
+            # Update text and color based on time remaining
+            if time_remaining > 600:  # More than 10 minutes
+                color = "lightgreen"
+            elif time_remaining > 300:  # More than 5 minutes
+                color = "yellow"
+            else:  # Less than 5 minutes
+                color = "orange"
+
+            self.session_label.configure(
+                text=session_text,
+                text_color=color
+            )
+
+    def handle_session_timeout(self) -> None:
+        """Handle session timeout"""
+        messagebox.showwarning(
+            "Session Expired",
+            "Your session has expired due to inactivity.\nYou will be redirected to the login screen."
+        )
+        self.logout()
+
+    def show_session_warning(self) -> None:
+        """Show session timeout warning"""
+        time_remaining = self.session_manager.get_time_until_expiry()
+        minutes_remaining = time_remaining // 60
+
+        response = messagebox.askyesno(
+            "Session Timeout Warning",
+            f"Your session will expire in {minutes_remaining} minute(s).\n\n"
+            f"Do you want to extend your session?",
+            icon="warning"
+        )
+
+        if response:
+            self.session_manager.extend_session()
+            logger.info("Session extended by user")
+        else:
+            logger.info("User declined session extension")
+
+    def logout(self) -> None:
+        """Logout and return to login screen"""
+        if self.session_manager:
+            self.session_manager.destroy_session()
+
+        # Close dashboard and show login window
+        self.destroy()
+        if self.parent:
+            self.parent.deiconify()
+
+    def on_closing(self) -> None:
+        """Handle window closing"""
+        if self.session_manager:
+            self.session_manager.destroy_session()
+        self.destroy()
+        if self.parent:
+            self.parent.destroy()
     
     def create_widgets(self) -> None:
         """Create dashboard UI with modern drawer-based navigation"""
@@ -70,14 +175,45 @@ class Dashboard(ctk.CTkToplevel):
             text_color="white"
         )
         header_label.pack(side="left", padx=20, pady=10)
-        
+
+        # Session and user info frame
+        info_frame = ctk.CTkFrame(header_frame, fg_color="transparent")
+        info_frame.pack(side="right", padx=20, pady=10)
+
+        # Session info (if session manager available)
+        if self.session_manager:
+            session_info = self.session_manager.get_session_info()
+            if session_info:
+                time_remaining = session_info['time_remaining_seconds']
+                minutes = time_remaining // 60
+                session_text = f"Session: {minutes}m left"
+                self.session_label = ctk.CTkLabel(
+                    info_frame,
+                    text=session_text,
+                    font=ctk.CTkFont(size=10),
+                    text_color="lightgreen" if time_remaining > 300 else "orange"
+                )
+                self.session_label.pack(side="left", padx=(0, 15))
+
         user_info = ctk.CTkLabel(
-            header_frame,
+            info_frame,
             text=f"User: {self.username} | Role: {self.role.upper()}",
             font=ctk.CTkFont(size=11),
             text_color="white"
         )
-        user_info.pack(side="right", padx=20, pady=10)
+        user_info.pack(side="left", padx=(0, 15))
+
+        # Logout button
+        logout_btn = ctk.CTkButton(
+            info_frame,
+            text="Logout",
+            width=80,
+            height=28,
+            fg_color="#DC3545",
+            hover_color="#C82333",
+            command=self.logout
+        )
+        logout_btn.pack(side="left")
         
         # Main container
         main_container = ctk.CTkFrame(self)
@@ -355,7 +491,7 @@ class Dashboard(ctk.CTkToplevel):
         try:
             results: List[DBRecord] = self.db.get_test_results()
             total: int = len(results)
-            passed: int = sum(1 for r in results if r.get('overall_pass') or r.get('status') == 'PASS')
+            passed: int = sum(1 for r in results if r.get('overall_pass') or r.get('status') == STATUS_PASS)
             failed: int = total - passed
             pass_rate: int = int((passed / total * 100) if total > 0 else 0)
             
@@ -371,7 +507,7 @@ class Dashboard(ctk.CTkToplevel):
                 }
             }
         except Exception as e:
-            print(f"Error getting statistics: {e}")
+            logger.error(f"Error getting statistics: {e}")
             return {
                 'total_tests': 0,
                 'passed_tests': 0,
@@ -388,7 +524,7 @@ class Dashboard(ctk.CTkToplevel):
             
             for result in results:
                 batch_id: int = int(result.get('id', 0))
-                passed: bool = result.get('overall_pass', False) or result.get('status') == 'PASS'
+                passed: bool = result.get('overall_pass', False) or result.get('status') == STATUS_PASS
                 
                 if batch_id not in batches:
                     batches[batch_id] = {'id': batch_id, 'total': 0, 'passed': 0}
@@ -405,7 +541,7 @@ class Dashboard(ctk.CTkToplevel):
             
             return batch_list
         except Exception as e:
-            print(f"Error getting batches: {e}")
+            logger.error(f"Error getting batches: {e}")
             return [{'id': i, 'yield': 100} for i in range(1, 6)]
     
     def _get_recent_errors(self) -> List[Dict[str, Any]]:
@@ -424,7 +560,7 @@ class Dashboard(ctk.CTkToplevel):
             
             return errors[:5]
         except Exception as e:
-            print(f"Error getting errors: {e}")
+            logger.error(f"Error getting errors: {e}")
             return []
     
     def _draw_pie_chart(self, parent: ctk.CTkFrame, stats: Dict[str, Any]) -> None:
@@ -453,10 +589,9 @@ class Dashboard(ctk.CTkToplevel):
                 
                 # Failed slice (red)
                 draw.pieslice([5, 5, size-5, size-5], int(passed_angle), 360, fill='#DD0000', outline='#333333')
-            
+
             photo = ctk.CTkImage(light_image=image, dark_image=image, size=(size, size))
             chart_label = ctk.CTkLabel(parent, image=photo, text="")
-            chart_label.image = photo
             chart_label.pack(pady=10)
             
             # Legend
@@ -486,7 +621,7 @@ class Dashboard(ctk.CTkToplevel):
                     font=ctk.CTkFont(size=10)
                 ).pack(side="left")
         except Exception as e:
-            print(f"Error drawing pie chart: {e}")
+            logger.error(f"Error drawing pie chart: {e}")
             ctk.CTkLabel(
                 parent,
                 text="Chart unavailable",

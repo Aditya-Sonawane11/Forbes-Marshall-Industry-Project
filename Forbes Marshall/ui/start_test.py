@@ -10,6 +10,7 @@ import csv
 import os
 from datetime import datetime
 from data.database import Database, DBRecord
+from config.config import STATUS_PASS, STATUS_FAIL
 from utils.serial_handler import SerialHandler
 from typing import List, Optional
 
@@ -744,13 +745,28 @@ class StartTestWindow(ctk.CTkFrame):
                         status: str, test_passed: bool) -> None:
         """Log test results to CSV file automatically"""
         try:
-            # Create logs directory if it doesn't exist
-            log_dir = "logs"
+            # Create logs directory if it doesn't exist - use absolute path to prevent traversal
+            log_dir = os.path.abspath("logs")
+            base_dir = os.path.abspath(".")
+
+            # Validate that log_dir is within the application directory
+            if not log_dir.startswith(base_dir):
+                logger.error(f"Invalid log directory path: {log_dir}")
+                return
+
             if not os.path.exists(log_dir):
                 os.makedirs(log_dir)
-            
-            # Generate filename with date
-            csv_filename = os.path.join(log_dir, f"test_results_{datetime.now().strftime('%Y%m%d')}.csv")
+
+            # Generate filename with date - sanitize to prevent path injection
+            date_str = datetime.now().strftime('%Y%m%d')
+            safe_filename = f"test_results_{date_str}.csv"
+            csv_filename = os.path.join(log_dir, safe_filename)
+
+            # Final validation - ensure the resolved path is within log_dir
+            csv_filename = os.path.abspath(csv_filename)
+            if not csv_filename.startswith(log_dir):
+                logger.error(f"Path traversal detected: {csv_filename}")
+                return
             
             # Check if file exists to determine if we need to write header
             file_exists = os.path.isfile(csv_filename)
@@ -779,7 +795,7 @@ class StartTestWindow(ctk.CTkFrame):
                     f"{voltage:.2f}",
                     f"{current:.2f}",
                     f"{resistance:.2f}",
-                    "PASS" if test_passed else "FAIL",
+                    STATUS_PASS if test_passed else STATUS_FAIL,
                     notes
                 ])
             

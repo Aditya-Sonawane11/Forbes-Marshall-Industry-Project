@@ -1014,3 +1014,130 @@ COM18 (com0com - serial port emulator (COM18))
 2026-01-21 18:03:06,020 - ui.start_test - INFO - [start_test.py:498] - Test result saved with ID: 8
 2026-01-21 18:03:06,030 - ui.start_test - INFO - [start_test.py:539] - Stage result saved successfully with ID 10: V=5.5, C=3.0, R=130.0
 2026-01-21 23:42:39,752 - __main__ - INFO - [main.py:34] - Application closed
+2026-02-10 14:04:37,642 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-02-10 14:04:37,643 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-02-10 14:04:37,644 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-02-10 14:04:37,645 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-02-10 14:04:38,649 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'IHDR' 16 13
+2026-02-10 14:04:38,649 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'cHRM' 41 32
+2026-02-10 14:04:38,649 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'PLTE' 85 768
+2026-02-10 14:04:38,650 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'tRNS' 865 255
+2026-02-10 14:04:38,650 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'tIME' 1132 7
+2026-02-10 14:04:38,650 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:753] - b'tIME' 1132 7 (unknown)
+2026-02-10 14:04:38,650 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'IDAT' 1151 12335
+2026-02-10 14:04:38,653 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'tEXt' 13498 37
+2026-02-10 14:04:38,653 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'tEXt' 13547 37
+2026-02-10 14:04:38,653 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:197] - STREAM b'tEXt' 13596 40
+2026-02-10 14:04:38,733 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-02-10 14:06:08,046 - ui.start_test - INFO - [start_test.py:23] - Initializing StartTestWindow for user: admin
+2026-02-10 14:06:56,086 - ui.start_test - INFO - [start_test.py:210] - CLICK: toggle_serial - Serial switch value: 1
+2026-02-10 14:06:56,090 - ui.start_test - INFO - [start_test.py:214] - Attempting to connect to serial port...
+2026-02-10 14:06:56,092 - utils.serial_handler - INFO - [serial_handler.py:34] - ============================================================
+2026-02-10 14:06:56,093 - utils.serial_handler - INFO - [serial_handler.py:35] - Attempting serial connection...
+2026-02-10 14:06:56,094 - utils.serial_handler - INFO - [serial_handler.py:36] - ============================================================
+2026-02-10 14:06:56,151 - utils.serial_handler - INFO - [serial_handler.py:56] - Configuration loaded: Port=COM17, BaudRate=9600, DataBits=8, Timeout=5
+2026-02-10 14:06:56,245 - utils.serial_handler - INFO - [serial_handler.py:91] - Opening serial port: COM17
+2026-02-10 14:06:56,276 - utils.serial_handler - INFO - [serial_handler.py:104] - Background read thread started
+2026-02-10 14:06:56,311 - ui.start_test - INFO - [start_test.py:224] - Manual entry fields disabled - reading from serial
+2026-02-10 14:07:20,499 - ui.start_test - INFO - [start_test.py:419] - CLICK: run_test button
+2026-02-10 14:07:20,500 - ui.start_test - INFO - [start_test.py:422] - PCB ID entered: 1086
+2026-02-10 14:07:20,500 - ui.start_test - INFO - [start_test.py:429] - Starting test for PCB: 1086, Serial Mode: True
+2026-02-10 14:07:20,501 - ui.start_test - INFO - [start_test.py:434] - Reading test data from serial...
+2026-02-10 14:07:20,509 - utils.serial_handler - INFO - [serial_handler.py:178] - Reading test data from PCB...
+2026-02-10 14:08:15,720 - ui.advanced_test - INFO - [advanced_test.py:19] - Initializing AdvancedTestWindow
+2026-02-10 14:10:41,153 - ui.jig_diagram_viewer - INFO - [jig_diagram_viewer.py:29] - Initializing JigDiagramViewerWindow for user: admin
+2026-02-10 14:11:14,722 - __main__ - INFO - [main.py:34] - Application closed
+2026-03-23 23:24:50,442 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-03-23 23:24:50,442 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-03-23 23:24:50,443 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-03-23 23:24:50,443 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-03-23 23:24:50,632 - utils.session_manager - INFO - [session_manager.py:25] - SessionManager initialized
+2026-03-23 23:24:50,998 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-03-23 23:24:50,999 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-03-23 23:24:50,999 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-03-23 23:24:50,999 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-03-23 23:24:50,999 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-03-23 23:24:50,999 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-03-23 23:24:50,999 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-03-23 23:24:51,001 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-03-23 23:24:51,001 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-03-23 23:24:51,001 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-03-23 23:24:51,033 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-03-23 23:25:00,645 - utils.session_manager - INFO - [session_manager.py:50] - Session created for user: admin (ID: 1, Role: Admin)
+2026-03-23 23:25:00,646 - ui.login_window - INFO - [login_window.py:145] - Session created for user: admin
+2026-03-23 23:25:00,744 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:25:07,268 - ui.start_test - INFO - [start_test.py:24] - Initializing StartTestWindow for user: admin
+2026-03-23 23:25:10,265 - ui.advanced_test - INFO - [advanced_test.py:20] - Initializing AdvancedTestWindow
+2026-03-23 23:25:10,750 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:25:20,761 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:25:30,765 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:25:40,771 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:25:50,786 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:26:00,790 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:26:10,791 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:26:20,799 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:26:30,812 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:26:40,814 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:26:50,816 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:27:00,822 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:27:10,825 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:27:20,839 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:27:30,761 - data.database - ERROR - [database.py:358] - Error deleting test case: 1451 (23000): Cannot delete or update a parent row: a foreign key constraint fails (`pcb_testing`.`test_results`, CONSTRAINT `test_results_ibfk_1` FOREIGN KEY (`test_case_id`) REFERENCES `test_cases` (`id`))
+2026-03-23 23:27:30,857 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:27:40,869 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:27:50,872 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:28:00,879 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:28:10,881 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:28:20,891 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:28:30,895 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:31:27,241 - __main__ - INFO - [main.py:23] - ================================================================================
+2026-03-23 23:31:27,241 - __main__ - INFO - [main.py:24] - PCB Testing System Started
+2026-03-23 23:31:27,241 - __main__ - INFO - [main.py:25] - ================================================================================
+2026-03-23 23:31:27,242 - __main__ - INFO - [main.py:30] - Initializing Login Window
+2026-03-23 23:31:27,361 - utils.session_manager - INFO - [session_manager.py:25] - SessionManager initialized
+2026-03-23 23:31:27,417 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IHDR' 16 13
+2026-03-23 23:31:27,417 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'cHRM' 41 32
+2026-03-23 23:31:27,418 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'PLTE' 85 768
+2026-03-23 23:31:27,418 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tRNS' 865 255
+2026-03-23 23:31:27,418 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tIME' 1132 7
+2026-03-23 23:31:27,418 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:783] - b'tIME' 1132 7 (unknown)
+2026-03-23 23:31:27,418 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'IDAT' 1151 12335
+2026-03-23 23:31:27,419 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13498 37
+2026-03-23 23:31:27,419 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13547 37
+2026-03-23 23:31:27,419 - PIL.PngImagePlugin - DEBUG - [PngImagePlugin.py:203] - STREAM b'tEXt' 13596 40
+2026-03-23 23:31:27,448 - __main__ - INFO - [main.py:32] - Login Window created, starting mainloop
+2026-03-23 23:31:43,533 - utils.session_manager - INFO - [session_manager.py:50] - Session created for user: admin (ID: 1, Role: Admin)
+2026-03-23 23:31:43,534 - ui.login_window - INFO - [login_window.py:145] - Session created for user: admin
+2026-03-23 23:31:43,640 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:31:53,645 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:32:03,647 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:32:13,652 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:32:23,654 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:32:33,660 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:32:43,663 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:32:53,679 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:33:03,363 - ui.start_test - INFO - [start_test.py:24] - Initializing StartTestWindow for user: admin
+2026-03-23 23:33:03,689 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:33:04,890 - ui.advanced_test - INFO - [advanced_test.py:20] - Initializing AdvancedTestWindow
+2026-03-23 23:33:08,475 - ui.stage_builder - INFO - [stage_builder.py:17] - Initializing StageBuilderWindow for user: admin, role: Admin
+2026-03-23 23:33:12,583 - ui.stage_builder - INFO - [stage_builder.py:520] - Attempting to delete sequence with ID: 2
+2026-03-23 23:33:12,763 - ui.stage_builder - INFO - [stage_builder.py:520] - Attempting to delete sequence with ID: 2
+2026-03-23 23:33:13,695 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:33:14,206 - data.database - INFO - [database.py:378] - Successfully deleted test case 2 and all related records
+2026-03-23 23:33:14,207 - ui.stage_builder - INFO - [stage_builder.py:527] - Successfully deleted sequence with ID: 2
+2026-03-23 23:33:16,701 - data.database - INFO - [database.py:378] - Successfully deleted test case 2 and all related records
+2026-03-23 23:33:16,703 - ui.stage_builder - INFO - [stage_builder.py:527] - Successfully deleted sequence with ID: 2
+2026-03-23 23:33:23,699 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:33:33,706 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:33:43,711 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:33:51,782 - ui.stage_builder - INFO - [stage_builder.py:203] - Adding stage: byhg
+2026-03-23 23:33:53,715 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:33:57,390 - ui.stage_builder - INFO - [stage_builder.py:203] - Adding stage: byhg
+2026-03-23 23:33:57,390 - ui.stage_builder - INFO - [stage_builder.py:247] - Stage added successfully: byhg. Total stages: 1
+2026-03-23 23:34:03,722 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:34:13,724 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:34:23,726 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:34:33,728 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:34:43,735 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:34:53,740 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin
+2026-03-23 23:35:03,759 - utils.session_manager - DEBUG - [session_manager.py:81] - Activity updated for user: admin

@@ -1,0 +1,765 @@
+{
+  "project": {
+    "title": "PCB Testing Automation System",
+    "organization": "Forbes Marshall",
+    "type": "Industry Project",
+    "date": "March 2026",
+    "tagline": "Automated multi-stage PCB quality assurance platform with role-based access control, serial hardware integration, and comprehensive test traceability."
+  },
+
+  "overview": {
+    "description": "The PCB Testing Automation System is a desktop application built for Forbes Marshall to automate and standardize PCB (Printed Circuit Board) testing workflows. It replaces manual testing processes with a centralized, configurable, and traceable system backed by a MySQL database with 9 normalized tables and 40+ API methods.",
+    "database_tables": 9,
+    "api_methods": "40+",
+    "database_type": "MySQL"
+  },
+
+  "key_highlights": [
+    "4-Phase Development — Core Testing → Test Management → Advanced Multi-Stage Testing → Hardware Integration",
+    "Role-Based Access Control — Admin, Manager, Tester with hierarchical permissions",
+    "MySQL Database — 9 tables, 10+ indexes, foreign key constraints, audit logging",
+    "Serial Communication — Real-time PCB data capture via COM port (PySerial)",
+    "Barcode Scanner — USB barcode scanner support for automatic PCB identification",
+    "Modern GUI — CustomTkinter-based dark-themed interface"
+  ],
+
+  "technology_stack": [
+    { "layer": "Language", "technology": "Python 3.8+" },
+    { "layer": "GUI Framework", "technology": "CustomTkinter 5.2.1" },
+    { "layer": "Database", "technology": "MySQL 8.0" },
+    { "layer": "DB Connector", "technology": "mysql-connector-python 8.2+" },
+    { "layer": "Image Handling", "technology": "Pillow 10.2+" },
+    { "layer": "Serial Comm", "technology": "PySerial 3.5+" },
+    { "layer": "Password Hashing", "technology": "bcrypt 4.1+" },
+    { "layer": "Packaging", "technology": "PyInstaller" }
+  ],
+
+  "features": {
+    "phase_1_core_testing": {
+      "title": "Phase 1 — Core Testing",
+      "items": [
+        "User authentication with bcrypt password hashing",
+        "Role-based login with dynamic dashboard",
+        "Start Test with manual parameter entry",
+        "Pass/Fail validation for Voltage, Current, and Resistance",
+        "Results stored in MySQL with timestamps"
+      ]
+    },
+    "phase_2_test_management": {
+      "title": "Phase 2 — Test Management",
+      "items": [
+        "Results History with filtering by date, status, user, and PCB serial number",
+        "CSV export of test results",
+        "Test Case Editor — create and manage test profiles with custom thresholds",
+        "Pass rate statistics and tracking",
+        "Role-based result visibility"
+      ]
+    },
+    "phase_3_advanced_testing": {
+      "title": "Phase 3 — Advanced Multi-Stage Testing",
+      "items": [
+        "Stage Builder — define ordered multi-stage test sequences",
+        "Each stage has independent voltage/current/resistance thresholds and duration",
+        "Advanced Test Runner — sequential stage execution with real-time progress",
+        "Per-stage failure reporting with detailed failure reasons",
+        "Custom workflows for different PCB types"
+      ]
+    },
+    "phase_4_hardware_integration": {
+      "title": "Phase 4 — Hardware Integration",
+      "items": [
+        "Serial Communication via COM port (configurable baud rate, data bits, stop bits, parity, timeout)",
+        "Expected PCB data format: V:5.0,C:0.5,R:100.0",
+        "Automatic vs Manual test mode switching",
+        "USB Barcode Scanner support (keyboard emulation mode)",
+        "Jig Diagram Viewer — upload and view test fixture reference images (PNG, JPG, GIF, BMP)",
+        "Admin-controlled communication settings"
+      ]
+    }
+  },
+
+  "installation": {
+    "prerequisites": [
+      "Python 3.8 or higher",
+      "MySQL Server 8.0+ (running)"
+    ],
+    "steps": [
+      "pip install -r requirements.txt",
+      "Configure MySQL credentials in config/config.py (Edit DB_HOST, DB_USER, DB_PASSWORD, DB_PORT as needed)",
+      "python init_mysql.py (Initialize the database — creates tables + default users)",
+      "python health_checker.py (Verify installation)",
+      "python main.py (Run the application)"
+    ],
+    "default_credentials": [
+      { "role": "Admin", "username": "admin", "password": "admin123" },
+      { "role": "Manager", "username": "manager", "password": "manager123" },
+      { "role": "Tester", "username": "tester", "password": "tester123" }
+    ]
+  },
+
+  "database_schema": {
+    "database_name": "pcb_testing",
+    "total_tables": 9,
+    "tables": {
+      "users": {
+        "purpose": "User accounts with hashed passwords",
+        "key_relationships": "Referenced by most tables",
+        "columns": [
+          { "name": "id", "type": "INT (PK)", "constraints": "AUTO_INCREMENT" },
+          { "name": "username", "type": "VARCHAR(255)", "constraints": "UNIQUE, NOT NULL" },
+          { "name": "password_hash", "type": "VARCHAR(255)", "constraints": "NOT NULL (bcrypt)" },
+          { "name": "role", "type": "ENUM", "constraints": "'Admin', 'Manager', 'Tester'" },
+          { "name": "email", "type": "VARCHAR(255)", "constraints": "" },
+          { "name": "created_at", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" },
+          { "name": "is_active", "type": "BOOLEAN", "constraints": "DEFAULT 1" }
+        ]
+      },
+      "test_cases": {
+        "purpose": "Test profiles with min/max thresholds",
+        "key_relationships": "FK → users",
+        "columns": [
+          { "name": "id", "type": "INT (PK)", "constraints": "AUTO_INCREMENT" },
+          { "name": "name", "type": "VARCHAR(255)", "constraints": "NOT NULL" },
+          { "name": "description", "type": "TEXT", "constraints": "" },
+          { "name": "voltage_min", "type": "DECIMAL(10,2)", "constraints": "NOT NULL" },
+          { "name": "voltage_max", "type": "DECIMAL(10,2)", "constraints": "NOT NULL" },
+          { "name": "current_min", "type": "DECIMAL(10,2)", "constraints": "NOT NULL" },
+          { "name": "current_max", "type": "DECIMAL(10,2)", "constraints": "NOT NULL" },
+          { "name": "resistance_min", "type": "DECIMAL(10,2)", "constraints": "NOT NULL" },
+          { "name": "resistance_max", "type": "DECIMAL(10,2)", "constraints": "NOT NULL" },
+          { "name": "created_by", "type": "INT (FK)", "constraints": "→ users(id)" },
+          { "name": "created_at", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" },
+          { "name": "updated_at", "type": "TIMESTAMP", "constraints": "ON UPDATE CURRENT_TIMESTAMP" }
+        ]
+      },
+      "test_stages": {
+        "purpose": "Individual stages in multi-stage tests",
+        "key_relationships": "FK → test_cases",
+        "columns": [
+          { "name": "id", "type": "INT (PK)", "constraints": "AUTO_INCREMENT" },
+          { "name": "test_case_id", "type": "INT (FK)", "constraints": "→ test_cases(id) ON DELETE CASCADE" },
+          { "name": "stage_number", "type": "INT", "constraints": "UNIQUE with test_case_id" },
+          { "name": "stage_name", "type": "VARCHAR(100)", "constraints": "NOT NULL" },
+          { "name": "description", "type": "TEXT", "constraints": "" },
+          { "name": "voltage_min", "type": "REAL", "constraints": "" },
+          { "name": "voltage_max", "type": "REAL", "constraints": "" },
+          { "name": "current_min", "type": "REAL", "constraints": "" },
+          { "name": "current_max", "type": "REAL", "constraints": "" },
+          { "name": "resistance_min", "type": "REAL", "constraints": "" },
+          { "name": "resistance_max", "type": "REAL", "constraints": "" },
+          { "name": "duration_seconds", "type": "INT", "constraints": "" },
+          { "name": "created_at", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" },
+          { "name": "updated_at", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" }
+        ]
+      },
+      "test_results": {
+        "purpose": "Overall test execution records",
+        "key_relationships": "FK → test_cases, users",
+        "columns": [
+          { "name": "id", "type": "INT (PK)", "constraints": "AUTO_INCREMENT" },
+          { "name": "test_case_id", "type": "INT (FK)", "constraints": "→ test_cases(id)" },
+          { "name": "user_id", "type": "INT (FK)", "constraints": "→ users(id)" },
+          { "name": "pcb_serial_number", "type": "VARCHAR(100)", "constraints": "" },
+          { "name": "status", "type": "VARCHAR(20)", "constraints": "'Pass', 'Fail', 'In Progress'" },
+          { "name": "overall_pass", "type": "BOOLEAN", "constraints": "" },
+          { "name": "start_time", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" },
+          { "name": "end_time", "type": "TIMESTAMP", "constraints": "" },
+          { "name": "notes", "type": "TEXT", "constraints": "" }
+        ]
+      },
+      "test_stage_results": {
+        "purpose": "Per-stage measured values and outcomes",
+        "key_relationships": "FK → test_results, test_stages",
+        "columns": [
+          { "name": "id", "type": "INT (PK)", "constraints": "AUTO_INCREMENT" },
+          { "name": "test_result_id", "type": "INT (FK)", "constraints": "→ test_results(id) ON DELETE CASCADE" },
+          { "name": "stage_id", "type": "INT (FK)", "constraints": "→ test_stages(id)" },
+          { "name": "voltage_measured", "type": "REAL", "constraints": "" },
+          { "name": "current_measured", "type": "REAL", "constraints": "" },
+          { "name": "resistance_measured", "type": "REAL", "constraints": "" },
+          { "name": "status", "type": "VARCHAR(20)", "constraints": "'Pass', 'Fail', 'Not Run'" },
+          { "name": "failure_reason", "type": "TEXT", "constraints": "" },
+          { "name": "start_time", "type": "TIMESTAMP", "constraints": "" },
+          { "name": "end_time", "type": "TIMESTAMP", "constraints": "" }
+        ]
+      },
+      "communication_config": {
+        "purpose": "Serial port configuration profiles",
+        "key_relationships": "FK → users",
+        "columns": [
+          { "name": "id", "type": "INT (PK)", "constraints": "AUTO_INCREMENT" },
+          { "name": "config_name", "type": "VARCHAR(100)", "constraints": "NOT NULL" },
+          { "name": "com_port", "type": "VARCHAR(10)", "constraints": "" },
+          { "name": "baud_rate", "type": "INT", "constraints": "DEFAULT 9600" },
+          { "name": "data_bits", "type": "INT", "constraints": "DEFAULT 8" },
+          { "name": "stop_bits", "type": "INT", "constraints": "DEFAULT 1" },
+          { "name": "parity", "type": "VARCHAR(10)", "constraints": "DEFAULT 'None'" },
+          { "name": "timeout_seconds", "type": "INT", "constraints": "DEFAULT 5" },
+          { "name": "created_by", "type": "INT (FK)", "constraints": "→ users(id)" },
+          { "name": "created_at", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" },
+          { "name": "updated_at", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" }
+        ]
+      },
+      "jig_diagrams": {
+        "purpose": "Test jig reference images",
+        "key_relationships": "FK → test_cases, users",
+        "columns": [
+          { "name": "id", "type": "INT (PK)", "constraints": "AUTO_INCREMENT" },
+          { "name": "test_case_id", "type": "INT (FK)", "constraints": "→ test_cases(id) ON DELETE SET NULL" },
+          { "name": "diagram_name", "type": "VARCHAR(100)", "constraints": "NOT NULL" },
+          { "name": "file_path", "type": "VARCHAR(255)", "constraints": "NOT NULL" },
+          { "name": "description", "type": "TEXT", "constraints": "" },
+          { "name": "uploaded_by", "type": "INT (FK)", "constraints": "→ users(id)" },
+          { "name": "uploaded_at", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" }
+        ]
+      },
+      "test_statistics": {
+        "purpose": "Aggregated pass/fail stats per test case",
+        "key_relationships": "FK → test_cases (UNIQUE)",
+        "columns": [
+          { "name": "id", "type": "INT (PK)", "constraints": "AUTO_INCREMENT" },
+          { "name": "test_case_id", "type": "INT (FK)", "constraints": "→ test_cases(id), UNIQUE" },
+          { "name": "total_tests", "type": "INT", "constraints": "DEFAULT 0" },
+          { "name": "passed_tests", "type": "INT", "constraints": "DEFAULT 0" },
+          { "name": "failed_tests", "type": "INT", "constraints": "DEFAULT 0" },
+          { "name": "pass_rate", "type": "REAL", "constraints": "DEFAULT 0.0" },
+          { "name": "last_updated", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" }
+        ]
+      },
+      "audit_log": {
+        "purpose": "Complete activity audit trail",
+        "key_relationships": "FK → users",
+        "columns": [
+          { "name": "id", "type": "INT (PK)", "constraints": "AUTO_INCREMENT" },
+          { "name": "user_id", "type": "INT (FK)", "constraints": "→ users(id)" },
+          { "name": "action", "type": "VARCHAR(100)", "constraints": "NOT NULL" },
+          { "name": "entity_type", "type": "VARCHAR(50)", "constraints": "" },
+          { "name": "entity_id", "type": "INT", "constraints": "" },
+          { "name": "old_values", "type": "TEXT", "constraints": "" },
+          { "name": "new_values", "type": "TEXT", "constraints": "" },
+          { "name": "timestamp", "type": "TIMESTAMP", "constraints": "DEFAULT CURRENT_TIMESTAMP" }
+        ]
+      }
+    },
+    "entity_relationships": [
+      { "from": "users", "to": "test_cases", "cardinality": "1:N" },
+      { "from": "users", "to": "test_results", "cardinality": "1:N" },
+      { "from": "users", "to": "communication_config", "cardinality": "1:N" },
+      { "from": "users", "to": "audit_log", "cardinality": "1:N" },
+      { "from": "users", "to": "jig_diagrams", "cardinality": "1:N" },
+      { "from": "test_cases", "to": "test_stages", "cardinality": "1:N" },
+      { "from": "test_cases", "to": "test_results", "cardinality": "1:N" },
+      { "from": "test_cases", "to": "jig_diagrams", "cardinality": "1:N" },
+      { "from": "test_cases", "to": "test_statistics", "cardinality": "1:1" },
+      { "from": "test_results", "to": "test_stage_results", "cardinality": "1:N" },
+      { "from": "test_stages", "to": "test_stage_results", "cardinality": "1:N" }
+    ],
+    "performance_indexes": [
+      { "name": "idx_users_username", "table": "users", "column": "username" },
+      { "name": "idx_users_role", "table": "users", "column": "role" },
+      { "name": "idx_test_results_user_id", "table": "test_results", "column": "user_id" },
+      { "name": "idx_test_results_test_case_id", "table": "test_results", "column": "test_case_id" },
+      { "name": "idx_test_results_start_time", "table": "test_results", "column": "start_time" },
+      { "name": "idx_test_stage_results_test_result_id", "table": "test_stage_results", "column": "test_result_id" },
+      { "name": "idx_test_stages_test_case_id", "table": "test_stages", "column": "test_case_id" },
+      { "name": "idx_jig_diagrams_test_case_id", "table": "jig_diagrams", "column": "test_case_id" },
+      { "name": "idx_audit_log_user_id", "table": "audit_log", "column": "user_id" },
+      { "name": "idx_audit_log_timestamp", "table": "audit_log", "column": "timestamp" }
+    ]
+  },
+
+  "user_roles": {
+    "hierarchy": "Admin (Level 3) > Manager (Level 2) > Tester (Level 1)",
+    "roles": [
+      { "role": "Admin", "level": 3 },
+      { "role": "Manager", "level": 2 },
+      { "role": "Tester", "level": 1 }
+    ],
+    "permissions": {
+      "login_and_dashboard": { "Admin": true, "Manager": true, "Tester": true },
+      "run_tests": { "Admin": true, "Manager": true, "Tester": true },
+      "view_test_results": { "Admin": true, "Manager": true, "Tester": true },
+      "view_jig_diagrams": { "Admin": true, "Manager": true, "Tester": true },
+      "create_edit_test_cases": { "Admin": true, "Manager": true, "Tester": false },
+      "build_multi_stage_tests": { "Admin": true, "Manager": true, "Tester": false },
+      "export_data": { "Admin": true, "Manager": true, "Tester": false },
+      "upload_jig_diagrams": { "Admin": true, "Manager": false, "Tester": false },
+      "configure_com_ports": { "Admin": true, "Manager": false, "Tester": false },
+      "user_management": { "Admin": true, "Manager": false, "Tester": false }
+    }
+  },
+
+  "test_parameter_ranges": {
+    "note": "Custom thresholds can be defined per test case and per stage via the Test Case Editor and Stage Builder.",
+    "defaults": [
+      { "parameter": "Voltage", "minimum": 4.5, "maximum": 5.5, "unit": "V" },
+      { "parameter": "Current", "minimum": 0.1, "maximum": 1.0, "unit": "A" },
+      { "parameter": "Resistance", "minimum": 90, "maximum": 110, "unit": "Ω" }
+    ]
+  },
+
+  "project_structure": {
+    "root_files": [
+      { "file": "main.py", "description": "Application entry point (CustomTkinter)" },
+      { "file": "requirements.txt", "description": "Python dependencies" },
+      { "file": "init_mysql.py", "description": "Database initialization script" },
+      { "file": "health_checker.py", "description": "System health diagnostics" },
+      { "file": "api_endpoint_checker.py", "description": "API endpoint validation (28+ tests)" },
+      { "file": "database_schema.sql", "description": "Full SQL schema definition" },
+      { "file": "complete-table.sql", "description": "Comprehensive JOIN query" }
+    ],
+    "directories": {
+      "config": [
+        { "file": "config.py", "description": "MySQL connection & app configuration" }
+      ],
+      "data": [
+        { "file": "database.py", "description": "Database class (700+ lines, 40+ methods)" },
+        { "file": "database_utils.py", "description": "Backup, export, maintenance utilities" },
+        { "file": "backups/", "description": "Database backup storage" }
+      ],
+      "ui": [
+        { "file": "login_window.py", "description": "Authentication screen" },
+        { "file": "dashboard.py", "description": "Main navigation hub" },
+        { "file": "start_test.py", "description": "Single test execution" },
+        { "file": "advanced_test.py", "description": "Multi-stage test runner" },
+        { "file": "results_history.py", "description": "Test result viewer with filters" },
+        { "file": "test_case_editor.py", "description": "Test profile manager" },
+        { "file": "stage_builder.py", "description": "Multi-stage sequence builder" },
+        { "file": "jig_diagram_viewer.py", "description": "Jig reference image viewer" },
+        { "file": "communication_config.py", "description": "Serial port settings UI" }
+      ],
+      "utils": [
+        { "file": "serial_handler.py", "description": "PySerial communication handler" }
+      ],
+      "assets": [
+        { "file": "logo.png", "description": "Forbes Marshall logo" },
+        { "file": "diagrams/", "description": "Jig diagram images" }
+      ],
+      "docs": [
+        { "file": "BARCODE_SETUP.md", "description": "Barcode scanner configuration" },
+        { "file": "DATABASE_DOCUMENTATION.md", "description": "Database reference" },
+        { "file": "DATABASE_SETUP.md", "description": "Database setup guide" },
+        { "file": "MYSQL_SETUP.md", "description": "MySQL installation guide" }
+      ]
+    }
+  },
+
+  "serial_communication": {
+    "data_format": "V:5.0,C:0.5,R:100.0",
+    "fields": [
+      { "key": "V", "description": "Voltage", "unit": "Volts" },
+      { "key": "C", "description": "Current", "unit": "Amperes" },
+      { "key": "R", "description": "Resistance", "unit": "Ohms" }
+    ],
+    "configuration_steps": [
+      "Admin configures COM port settings (baud rate, data bits, stop bits, parity, timeout) via Communication Config",
+      "Test connection before saving",
+      "Testers toggle serial mode in Start Test / Advanced Test windows",
+      "System reads measured values directly from hardware when enabled"
+    ]
+  },
+
+  "barcode_scanner": {
+    "type": "USB barcode scanner (keyboard emulation mode)",
+    "features": [
+      "Works with any USB barcode scanner in keyboard emulation mode",
+      "Auto-focus on PCB ID field when test windows open",
+      "Scanned data is automatically captured with visual feedback"
+    ],
+    "documentation": "docs/BARCODE_SETUP.md"
+  },
+
+  "verification_and_diagnostics": {
+    "tools": [
+      {
+        "script": "health_checker.py",
+        "description": "System health check (connectivity, tables, auth, CRUD, performance)",
+        "output": "health_check_report.json"
+      },
+      {
+        "script": "api_endpoint_checker.py",
+        "description": "API endpoint validation (28+ endpoints tested)",
+        "output": "api_check_report.json"
+      }
+    ]
+  },
+
+  "security": [
+    "bcrypt password hashing — no plain-text password storage",
+    "Role-based access control at both UI and data layers",
+    "Foreign key constraints for referential integrity",
+    "Complete audit logging with old/new value tracking",
+    "Input validation on all test parameters",
+    "Session management with secure logout"
+  ],
+
+  "documentation": [
+    { "file": "GETTING_STARTED.md", "purpose": "7-step quick start guide" },
+    { "file": "docs/MYSQL_SETUP.md", "purpose": "Comprehensive MySQL setup & maintenance" },
+    { "file": "docs/DATABASE_SETUP.md", "purpose": "Database configuration guide" },
+    { "file": "docs/BARCODE_SETUP.md", "purpose": "Barcode scanner setup" },
+    { "file": "DOCUMENTATION_INDEX.md", "purpose": "Complete documentation index" },
+    { "file": "PPT_PROMPT.md", "purpose": "Detailed prompt for PPT generation" }
+  ],
+
+  "ppt_prompt": {
+    "slides": [
+      {
+        "number": 1,
+        "title": "Title Slide",
+        "content": {
+          "title": "PCB Testing Automation System",
+          "subtitle": "Automated Multi-Stage PCB Quality Assurance Platform",
+          "organization": "Forbes Marshall (Industry Project)",
+          "date": "March 2026",
+          "notes": "Add Forbes Marshall logo placeholder"
+        }
+      },
+      {
+        "number": 2,
+        "title": "Table of Contents",
+        "content": {
+          "sections": [
+            "Problem Statement",
+            "Project Objectives",
+            "Technology Stack",
+            "System Architecture",
+            "Database Schema",
+            "User Roles & Access Control",
+            "Core Features (Phase 1–4)",
+            "UI Screenshots / Mockups",
+            "Serial Communication & Hardware Integration",
+            "Testing & Quality Assurance",
+            "Future Scope",
+            "Conclusion"
+          ]
+        }
+      },
+      {
+        "number": 3,
+        "title": "Problem Statement",
+        "content": {
+          "points": [
+            "Manual PCB testing is error-prone, slow, and lacks traceability",
+            "No centralized system for recording test outcomes",
+            "Different operators may apply inconsistent testing parameters",
+            "No role-based control over test administration",
+            "Lack of hardware integration for automated data capture"
+          ]
+        }
+      },
+      {
+        "number": 4,
+        "title": "Project Objectives",
+        "content": {
+          "points": [
+            "Build a desktop application to automate PCB testing workflows",
+            "Implement role-based access control (Admin, Manager, Tester)",
+            "Create multi-stage test sequences with configurable parameters",
+            "Integrate serial communication (COM port) for real-time PCB data capture",
+            "Store all test results in a MySQL database for traceability",
+            "Support barcode scanner input for PCB identification",
+            "Provide export, statistics, and audit logging capabilities"
+          ]
+        }
+      },
+      {
+        "number": 5,
+        "title": "Technology Stack",
+        "content": {
+          "note": "Present as a visual stack/grid",
+          "stack": [
+            { "layer": "Language", "technology": "Python 3.8+" },
+            { "layer": "GUI Framework", "technology": "CustomTkinter (Modern Tkinter)" },
+            { "layer": "Database", "technology": "MySQL 8.0" },
+            { "layer": "DB Connector", "technology": "mysql-connector-python" },
+            { "layer": "Image Handling", "technology": "Pillow (PIL)" },
+            { "layer": "Serial Comm", "technology": "PySerial" },
+            { "layer": "Password Hashing", "technology": "bcrypt" },
+            { "layer": "Packaging", "technology": "PyInstaller" }
+          ]
+        }
+      },
+      {
+        "number": 6,
+        "title": "System Architecture",
+        "content": {
+          "note": "Show a layered architecture diagram",
+          "layers": [
+            { "name": "Presentation Layer", "detail": "CustomTkinter GUI — Login, Dashboard, etc." },
+            { "name": "Business Logic Layer", "detail": "Test Execution, Stage Sequencing, Parameter Validation, Role Checks" },
+            { "name": "Data Access Layer", "detail": "database.py — 700+ lines, 40+ methods; database_utils.py — Backup, Export, Audit" },
+            { "name": "Database Layer", "detail": "MySQL 8.0 — pcb_testing database; 9 Tables, Indexed, Foreign Keys" },
+            { "name": "Hardware Interface Layer", "detail": "PySerial — COM Port Communication; USB Barcode Scanner — Keyboard Emulation" }
+          ]
+        }
+      },
+      {
+        "number": 7,
+        "title": "Database Schema Overview",
+        "content": {
+          "note": "Show an Entity-Relationship (ER) diagram with 9 tables",
+          "tables": [
+            { "name": "users", "description": "Stores user accounts with bcrypt-hashed passwords", "columns": ["id (PK)", "username (UNIQUE)", "password_hash", "role (Admin/Manager/Tester)", "email", "created_at", "is_active"] },
+            { "name": "test_cases", "description": "Defines test profiles with min/max thresholds", "columns": ["id (PK)", "name", "description", "voltage_min/max", "current_min/max", "resistance_min/max", "created_by (FK → users)", "created_at", "updated_at"] },
+            { "name": "test_stages", "description": "Individual stages within a multi-stage test", "columns": ["id (PK)", "test_case_id (FK → test_cases)", "stage_number", "stage_name", "description", "voltage/current/resistance min/max", "duration_seconds"], "constraints": ["UNIQUE constraint on (test_case_id, stage_number)"] },
+            { "name": "test_results", "description": "Overall test execution records", "columns": ["id (PK)", "test_case_id (FK → test_cases)", "user_id (FK → users)", "pcb_serial_number", "status (Pass/Fail/In Progress)", "overall_pass", "start_time", "end_time", "notes"] },
+            { "name": "test_stage_results", "description": "Per-stage measured values and outcomes", "columns": ["id (PK)", "test_result_id (FK → test_results)", "stage_id (FK → test_stages)", "voltage_measured", "current_measured", "resistance_measured", "status (Pass/Fail/Not Run)", "failure_reason", "start_time", "end_time"] },
+            { "name": "communication_config", "description": "Serial port configuration profiles", "columns": ["id (PK)", "config_name", "com_port", "baud_rate", "data_bits", "stop_bits", "parity", "timeout_seconds", "created_by (FK → users)"] },
+            { "name": "jig_diagrams", "description": "Test jig reference images", "columns": ["id (PK)", "test_case_id (FK → test_cases)", "diagram_name", "file_path", "description", "uploaded_by (FK → users)"] },
+            { "name": "test_statistics", "description": "Aggregated pass/fail stats per test case", "columns": ["id (PK)", "test_case_id (FK → test_cases, UNIQUE)", "total_tests", "passed_tests", "failed_tests", "pass_rate"] },
+            { "name": "audit_log", "description": "Complete activity audit trail", "columns": ["id (PK)", "user_id (FK → users)", "action", "entity_type", "entity_id", "old_values", "new_values", "timestamp"] }
+          ]
+        }
+      },
+      {
+        "number": 8,
+        "title": "Database ER Diagram (Visual)",
+        "content": {
+          "note": "Draw an ER diagram showing all relationships with foreign key arrows and cardinality notation (1:N, 1:1)"
+        }
+      },
+      {
+        "number": 9,
+        "title": "Database Indexes",
+        "content": {
+          "note": "Show performance optimization indexes",
+          "indexes": [
+            { "name": "idx_users_username", "table": "users", "column": "username" },
+            { "name": "idx_users_role", "table": "users", "column": "role" },
+            { "name": "idx_test_results_user_id", "table": "test_results", "column": "user_id" },
+            { "name": "idx_test_results_test_case_id", "table": "test_results", "column": "test_case_id" },
+            { "name": "idx_test_results_start_time", "table": "test_results", "column": "start_time" },
+            { "name": "idx_test_stage_results_test_result", "table": "test_stage_results", "column": "test_result_id" },
+            { "name": "idx_test_stages_test_case_id", "table": "test_stages", "column": "test_case_id" },
+            { "name": "idx_jig_diagrams_test_case_id", "table": "jig_diagrams", "column": "test_case_id" },
+            { "name": "idx_audit_log_user_id", "table": "audit_log", "column": "user_id" },
+            { "name": "idx_audit_log_timestamp", "table": "audit_log", "column": "timestamp" }
+          ]
+        }
+      },
+      {
+        "number": 10,
+        "title": "User Roles & Access Control",
+        "content": {
+          "note": "Show a matrix/table with role hierarchy: Admin (Level 3) > Manager (Level 2) > Tester (Level 1)"
+        }
+      },
+      {
+        "number": 11,
+        "title": "Phase 1: Core Testing",
+        "content": {
+          "points": [
+            "User authentication with bcrypt password hashing",
+            "Role-based login and dashboard",
+            "Start Test window with manual parameter entry",
+            "Pass/Fail logic based on voltage (4.5–5.5V), current (0.1–1.0A), resistance (90–110Ω)",
+            "Results stored in MySQL with timestamp tracking"
+          ]
+        }
+      },
+      {
+        "number": 12,
+        "title": "Phase 2: Test Management",
+        "content": {
+          "points": [
+            "Results History with advanced filtering (by date, status, user, PCB serial)",
+            "CSV export of test results",
+            "Test Case Editor — create custom test profiles with configurable thresholds",
+            "Statistics dashboard with pass rates",
+            "Role-based visibility of results"
+          ]
+        }
+      },
+      {
+        "number": 13,
+        "title": "Phase 3: Advanced Multi-Stage Testing",
+        "content": {
+          "points": [
+            "Stage Builder — define multi-stage test sequences",
+            "Each stage has its own voltage/current/resistance thresholds and duration",
+            "Advanced Test Runner — executes stages sequentially",
+            "Real-time progress tracking with live stage indicators",
+            "Per-stage failure reporting with detailed failure reasons",
+            "Custom workflows for different PCB types"
+          ]
+        }
+      },
+      {
+        "number": 14,
+        "title": "Phase 4: Hardware Integration",
+        "content": {
+          "points": [
+            "Serial Communication via PySerial (COM port)",
+            "Expected data format from PCB: V:5.0,C:0.5,R:100.0",
+            "Admin-controlled serial port configuration (baud rate, data bits, stop bits, parity, timeout)",
+            "Automatic vs Manual test mode switching",
+            "USB Barcode Scanner support (keyboard emulation)",
+            "Auto-focus PCB ID capture on scan",
+            "Jig Diagram Viewer — upload and view test fixture reference images (PNG, JPG, GIF, BMP)"
+          ]
+        }
+      },
+      {
+        "number": 15,
+        "title": "Application UI Flow",
+        "content": {
+          "note": "Show a flowchart",
+          "flow": {
+            "start": "Login Screen",
+            "next": "Dashboard (Role-Based Menu)",
+            "branches": [
+              { "option": "Start Test", "leads_to": "Run Single Test → Save Result" },
+              { "option": "Advanced Test", "leads_to": "Multi-Stage Execution → Save All Stage Results" },
+              { "option": "Test Case Editor", "leads_to": "Create/Edit Test Profiles" },
+              { "option": "Stage Builder", "leads_to": "Define Multi-Stage Sequences" },
+              { "option": "Results History", "leads_to": "View/Filter/Export Results" },
+              { "option": "Jig Diagram Viewer", "leads_to": "Upload/View Reference Images" },
+              { "option": "Communication Config", "leads_to": "Configure COM Port Settings" }
+            ]
+          }
+        }
+      },
+      {
+        "number": 16,
+        "title": "Project Structure",
+        "content": {
+          "note": "Show as a tree diagram"
+        }
+      },
+      {
+        "number": 17,
+        "title": "Key Database Queries",
+        "content": {
+          "note": "Show a sample comprehensive query that JOINs all 9 tables. Highlight: 40+ database API methods covering all CRUD operations.",
+          "sample_query": "SELECT tr.id, tr.pcb_serial_number, tr.status, u.username, u.role, tc.name AS test_case_name, ts.stage_name, tsr.voltage_measured, tsr.current_measured, tsr.resistance_measured, tsr.status AS stage_status, tsx.pass_rate FROM test_results tr JOIN users u ON tr.user_id = u.id JOIN test_cases tc ON tr.test_case_id = tc.id LEFT JOIN test_stage_results tsr ON tsr.test_result_id = tr.id LEFT JOIN test_stages ts ON ts.id = tsr.stage_id LEFT JOIN test_statistics tsx ON tsx.test_case_id = tc.id ORDER BY tr.start_time DESC;"
+        }
+      },
+      {
+        "number": 18,
+        "title": "Health Check & Verification Tools",
+        "content": {
+          "points": [
+            "health_checker.py — Automated system diagnostics (Database connectivity, table integrity, authentication tests, CRUD validation, query performance benchmarking)",
+            "api_endpoint_checker.py — Tests 28+ API endpoints",
+            "init_mysql.py — One-command database initialization",
+            "All tools generate JSON reports for audit"
+          ]
+        }
+      },
+      {
+        "number": 19,
+        "title": "Security Features",
+        "content": {
+          "points": [
+            "bcrypt password hashing (no plain-text storage)",
+            "Role-based access control (RBAC) at UI and data layer",
+            "Foreign key constraints for data integrity",
+            "Audit logging — every action tracked with old/new values",
+            "Input validation on all test parameters",
+            "Session management with logout functionality"
+          ]
+        }
+      },
+      {
+        "number": 20,
+        "title": "Backup & Data Management",
+        "content": {
+          "points": [
+            "Automated database backup system",
+            "CSV export of test results",
+            "Database integrity checks",
+            "Data archival capabilities",
+            "JSON report generation for health and API checks"
+          ]
+        }
+      },
+      {
+        "number": 21,
+        "title": "Test Parameter Validation",
+        "content": {
+          "note": "Show validation logic with visual ranges",
+          "parameters": [
+            { "parameter": "Voltage", "min": 4.5, "max": 5.5, "unit": "V" },
+            { "parameter": "Current", "min": 0.1, "max": 1.0, "unit": "A" },
+            { "parameter": "Resistance", "min": 90, "max": 110, "unit": "Ω" }
+          ],
+          "additional_notes": [
+            "Measured values compared against configurable thresholds",
+            "Each stage can have independent thresholds",
+            "Automatic Pass/Fail determination"
+          ]
+        }
+      },
+      {
+        "number": 22,
+        "title": "Challenges & Solutions",
+        "content": {
+          "items": [
+            { "challenge": "Reliable serial communication", "solution": "PySerial with configurable timeout & retry" },
+            { "challenge": "Database migration (SQLite → MySQL)", "solution": "Complete rewrite with mysql-connector" },
+            { "challenge": "Multi-stage test sequencing", "solution": "Stage Builder with ordered execution engine" },
+            { "challenge": "Role-based UI rendering", "solution": "Dynamic widget creation based on role level" },
+            { "challenge": "Cross-platform packaging", "solution": "PyInstaller with resource path resolution" },
+            { "challenge": "Real-time data capture from hardware", "solution": "Threaded serial reading with data parsing" }
+          ]
+        }
+      },
+      {
+        "number": 23,
+        "title": "Future Scope",
+        "content": {
+          "points": [
+            "Web-based dashboard for remote monitoring",
+            "IoT sensor integration for environmental data (temperature, humidity)",
+            "Machine learning for predictive test failure analysis",
+            "Cloud database deployment (AWS RDS / Azure MySQL)",
+            "REST API for third-party integration",
+            "Automated test scheduling and batch execution",
+            "Mobile companion app for notifications",
+            "Multi-language support"
+          ]
+        }
+      },
+      {
+        "number": 24,
+        "title": "Conclusion",
+        "content": {
+          "points": [
+            "Successfully built a complete PCB testing automation platform",
+            "9-table MySQL database with 40+ API methods",
+            "4-phase development covering core testing through hardware integration",
+            "Role-based access for Admin, Manager, and Tester workflows",
+            "Serial communication integration for real-time data capture",
+            "Production-ready with health checks, backups, and audit logging"
+          ]
+        }
+      },
+      {
+        "number": 25,
+        "title": "Thank You / Q&A",
+        "content": {
+          "project": "PCB Testing Automation System",
+          "organization": "Forbes Marshall",
+          "tech_stack": "Python + CustomTkinter + MySQL + PySerial",
+          "notes": "Contact information placeholder, Q&A"
+        }
+      }
+    ],
+    "design_notes": {
+      "primary_color": "#2B5A8C",
+      "primary_color_name": "Corporate Blue",
+      "secondary_color": "#2A2A2A",
+      "secondary_color_name": "Dark Background",
+      "accent_colors": {
+        "pass": { "color": "#4CAF50", "name": "Green" },
+        "fail": { "color": "#F44336", "name": "Red" }
+      },
+      "font": "Segoe UI or Inter",
+      "style": "Modern, minimal, with icons and diagrams",
+      "logo": "Forbes Marshall logo on every slide header",
+      "transitions": "Subtle fade or slide",
+      "charts": "Use pie charts for pass/fail ratios, bar charts for statistics"
+    }
+  }
+}

@@ -7,6 +7,7 @@ from PIL import Image, ImageTk
 import os
 import logging
 from data.database import Database, DBRecord
+from config.config import ROLE_ADMIN
 from typing import Optional, List
 
 # Set up logger for this module
@@ -65,7 +66,7 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
         self.diagram_combo.pack(side="left", padx=10)
         
         # Admin controls
-        if self.role == "admin":
+        if self.role == ROLE_ADMIN:
             upload_btn = ctk.CTkButton(
                 controls_frame,
                 text="Upload Diagram",
@@ -103,7 +104,7 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
         bottom_frame = ctk.CTkFrame(container)
         bottom_frame.pack(pady=10)
         
-        if self.role == "admin" and self.current_diagram:
+        if self.role == ROLE_ADMIN and self.current_diagram:
             delete_btn = ctk.CTkButton(
                 bottom_frame,
                 text="Delete Diagram",
@@ -127,36 +128,38 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
     def load_diagrams(self) -> None:
         """Load available diagrams"""
         diagrams: List[DBRecord] = self.db.get_jig_diagrams()
-        
+
         if diagrams:
-            diagram_names = [f"{diag['name']} - {diag.get('description', 'N/A')}" for diag in diagrams]
+            # Use correct key names from database: diagram_name, file_path
+            diagram_names = [f"{diag['diagram_name']} - {diag.get('description', 'N/A')}" for diag in diagrams]
             self.diagram_combo.configure(values=diagram_names)
             self.diagrams_data = diagrams
         else:
             self.diagram_combo.configure(values=["No diagrams available"])
             self.diagrams_data = []
-    
+
     def on_diagram_selected(self, choice: str) -> None:
         """Handle diagram selection"""
         if not self.diagrams_data or choice == "No diagrams available":
             return
-        
-        # Find selected diagram
+
+        # Find selected diagram using correct key names
         for diag in self.diagrams_data:
-            if f"{diag['name']} - {diag.get('description', 'N/A')}" == choice:
+            if f"{diag['diagram_name']} - {diag.get('description', 'N/A')}" == choice:
                 self.current_diagram = diag
                 break
-        
+
         if self.current_diagram:
             self.display_diagram()
-    
+
     def display_diagram(self) -> None:
         """Display the selected diagram"""
         if not self.current_diagram:
             logger.warning("No diagram selected")
             return
-        
-        diagram_path: str = self.current_diagram.get('image_path', '')
+
+        # Use correct key name from database: file_path
+        diagram_path: str = self.current_diagram.get('file_path', '')
         
         if not os.path.exists(diagram_path):
             logger.error(f"Diagram file not found: {diagram_path}")
@@ -178,8 +181,8 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
             self.image_label.configure(image=photo, text="")
             self.current_image = photo  # Keep reference to prevent garbage collection
             
-            # Update info
-            name = self.current_diagram.get('name', 'N/A')
+            # Update info - use correct key names
+            name = self.current_diagram.get('diagram_name', 'N/A')
             description = self.current_diagram.get('description', 'N/A')
             self.info_label.configure(
                 text=f"Diagram: {name} | Type: {description}"
@@ -291,7 +294,6 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
             except Exception as e:
                 logger.error(f"Failed to upload diagram: {str(e)}")
                 messagebox.showerror("Error", f"Failed to upload diagram: {str(e)}")
-                messagebox.showerror("Error", f"Failed to upload diagram: {str(e)}")
         
         save_btn = ctk.CTkButton(
             container,
@@ -306,12 +308,12 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
         if not self.current_diagram:
             logger.warning("No diagram selected for deletion")
             return
-        
-        diagram_name = self.current_diagram.get('name', 'Unknown')
+
+        diagram_name = self.current_diagram.get('diagram_name', 'Unknown')
         if messagebox.askyesno("Confirm", f"Are you sure you want to delete '{diagram_name}'?"):
-            # Delete file
+            # Delete file - use correct key name
             try:
-                file_path = self.current_diagram.get('image_path', '')
+                file_path = self.current_diagram.get('file_path', '')
                 if os.path.exists(file_path):
                     os.remove(file_path)
                     logger.info(f"Deleted diagram file: {file_path}")
@@ -324,12 +326,9 @@ class JigDiagramViewerWindow(ctk.CTkFrame):
                 logger.info(f"Deleted diagram from database: ID {self.current_diagram['id']}")
             except Exception as e:
                 logger.error(f"Error deleting from database: {e}")
-            
+
             self.current_diagram = None
-            messagebox.showinfo("Success", "Diagram deleted")
             self.load_diagrams()
             self.image_label.configure(image=None, text="Select a diagram to view")
             self.info_label.configure(text="")
-            self.load_diagrams()
-            
             messagebox.showinfo("Success", "Diagram deleted")

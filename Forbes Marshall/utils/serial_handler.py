@@ -20,6 +20,7 @@ class SerialHandler:
         self.data_queue = queue.Queue()
         self.stop_reading = False
         self.db = Database()
+        self._lock = threading.Lock()  # Thread synchronization lock
     
     @staticmethod
     def get_available_ports():
@@ -115,13 +116,15 @@ class SerialHandler:
     def disconnect(self):
         """Disconnect from serial port"""
         self.stop_reading = True
-        
+
         if self.read_thread and self.read_thread.is_alive():
             self.read_thread.join(timeout=2)
-        
-        if self.serial_port and self.serial_port.is_open:
-            self.serial_port.close()
-        
+
+        with self._lock:
+            if self.serial_port and self.serial_port.is_open:
+                self.serial_port.close()
+            self.serial_port = None
+
         self.is_connected = False
     
     def start_reading(self):
@@ -132,24 +135,30 @@ class SerialHandler:
     
     def _read_loop(self):
         """Background thread for reading serial data"""
-        while not self.stop_reading and self.serial_port and self.serial_port.is_open:
+        while not self.stop_reading:
             try:
-                if self.serial_port.in_waiting > 0:
-                    data = self.serial_port.readline().decode('utf-8').strip()
-                    if data:
-                        self.data_queue.put(data)
+                with self._lock:
+                    if self.serial_port is None or not self.serial_port.is_open:
+                        break
+                    if self.serial_port.in_waiting > 0:
+                        data = self.serial_port.readline().decode('utf-8').strip()
+                        if data:
+                            self.data_queue.put(data)
                 time.sleep(0.01)  # Small delay to prevent CPU spinning
             except Exception as e:
-                print(f"Error reading serial data: {e}")
+                logger.error(f"Error reading serial data: {e}")
                 break
     
     def write(self, data):
         """Write data to serial port"""
-        if not self.is_connected or not self.serial_port:
+        if not self.is_connected:
             raise Exception("Not connected to serial port")
-        
+
         try:
-            self.serial_port.write(data.encode('utf-8'))
+            with self._lock:
+                if self.serial_port is None:
+                    raise Exception("Serial port is not available")
+                self.serial_port.write(data.encode('utf-8'))
             return True
         except Exception as e:
             raise Exception(f"Failed to write data: {str(e)}")

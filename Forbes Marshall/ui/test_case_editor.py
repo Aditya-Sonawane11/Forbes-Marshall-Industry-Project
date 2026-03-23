@@ -141,11 +141,11 @@ class TestCaseEditorWindow(ctk.CTkFrame):
     def save_test_case(self):
         """Save test case to database"""
         pcb_type = self.pcb_type_entry.get().strip()
-        
+
         if not pcb_type:
             messagebox.showerror("Error", "Please enter PCB Type")
             return
-        
+
         try:
             voltage_min = float(self.voltage_min_entry.get())
             voltage_max = float(self.voltage_max_entry.get())
@@ -156,14 +156,38 @@ class TestCaseEditorWindow(ctk.CTkFrame):
         except ValueError:
             messagebox.showerror("Error", "Please enter valid numeric values for all ranges")
             return
-        
+
+        # Validate ranges (min should not exceed max)
+        if voltage_min > voltage_max:
+            messagebox.showerror("Error", "Voltage minimum cannot exceed maximum")
+            return
+        if current_min > current_max:
+            messagebox.showerror("Error", "Current minimum cannot exceed maximum")
+            return
+        if resistance_min > resistance_max:
+            messagebox.showerror("Error", "Resistance minimum cannot exceed maximum")
+            return
+
+        # Validate non-negative values
+        if voltage_min < 0 or current_min < 0 or resistance_min < 0:
+            messagebox.showerror("Error", "Values cannot be negative")
+            return
+
         description = self.description_entry.get("1.0", "end-1c").strip()
-        
+
+        # Get user_id from username
+        user_id = self.db.get_user_id(self.username)
+        if not user_id:
+            messagebox.showerror("Error", "Could not identify current user")
+            return
+
+        # Correct method signature: name, description, voltage_min, voltage_max,
+        # current_min, current_max, resistance_min, resistance_max, created_by
         success = self.db.save_test_case(
-            pcb_type, voltage_min, voltage_max,
+            pcb_type, description, voltage_min, voltage_max,
             current_min, current_max,
             resistance_min, resistance_max,
-            description, self.username
+            user_id
         )
         
         if success:

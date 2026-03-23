@@ -5,10 +5,14 @@ SQL Database for PCB Testing Automation System
 import mysql.connector
 from mysql.connector import Error
 import bcrypt
+import logging
 from config.config import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT, ROLE_ADMIN, ROLE_MANAGER, ROLE_TESTER
 from datetime import datetime
 import json
 from typing import List, Dict, Any, Optional
+
+# Set up logger for this module
+logger = logging.getLogger(__name__)
 
 # Type alias for database records
 DBRecord = Dict[str, Any]
@@ -32,7 +36,7 @@ class Database:
             )
             self.cursor = self.conn.cursor(dictionary=True)
         except Error as e:
-            print(f"Error connecting to MySQL: {e}")
+            logger.error(f"Error connecting to MySQL: {e}")
             raise
     
     def close(self) -> None:
@@ -236,7 +240,7 @@ class Database:
             self._create_default_users()
             
         except Error as e:
-            print(f"Error initializing database: {e}")
+            logger.error(f"Error initializing database: {e}")
             raise
     
     def _create_default_users(self) -> None:
@@ -257,7 +261,7 @@ class Database:
             self.cursor.execute("SELECT id FROM users WHERE username = %s", (username,))
             return self.cursor.fetchone() is not None
         except Exception as e:
-            print(f"Error checking user existence: {e}")
+            logger.error(f"Error checking user existence: {e}")
             return False
     
     def create_user(self, username, password, role):
@@ -272,7 +276,7 @@ class Database:
             return self.cursor.lastrowid
         except Exception as e:
             self.conn.rollback()
-            print(f"Error creating user: {e}")
+            logger.error(f"Error creating user: {e}")
             return None
     
     def authenticate_user(self, username: str, password: str) -> Optional[DBRecord]:
@@ -285,7 +289,7 @@ class Database:
                 return {'id': user['id'], 'username': username, 'role': user['role']}
             return None
         except Exception as e:
-            print(f"Error authenticating user: {e}")
+            logger.error(f"Error authenticating user: {e}")
             return None
     
     def get_user_id(self, username: str) -> Optional[int]:
@@ -295,7 +299,7 @@ class Database:
             result: Optional[DBRecord] = self.cursor.fetchone()
             return int(result['id']) if result else None
         except Exception as e:
-            print(f"Error getting user ID: {e}")
+            logger.error(f"Error getting user ID: {e}")
             return None
     
     def get_user_by_id(self, user_id: int) -> Optional[DBRecord]:
@@ -304,7 +308,7 @@ class Database:
             self.cursor.execute("SELECT * FROM users WHERE id = %s", (user_id,))
             return self.cursor.fetchone()
         except Exception as e:
-            print(f"Error getting user: {e}")
+            logger.error(f"Error getting user: {e}")
             return None
     
     def save_test_case(self, name, description, voltage_min, voltage_max, current_min, current_max, 
@@ -322,7 +326,7 @@ class Database:
             return self.cursor.lastrowid
         except Exception as e:
             self.conn.rollback()
-            print(f"Error saving test case: {e}")
+            logger.error(f"Error saving test case: {e}")
             return None
     
     def get_test_cases(self) -> List[DBRecord]:
@@ -331,7 +335,7 @@ class Database:
             self.cursor.execute("SELECT * FROM test_cases ORDER BY created_at DESC")
             return self.cursor.fetchall()
         except Exception as e:
-            print(f"Error getting test cases: {e}")
+            logger.error(f"Error getting test cases: {e}")
             return []
     
     def get_test_case_by_id(self, test_case_id):
@@ -340,27 +344,55 @@ class Database:
             self.cursor.execute("SELECT * FROM test_cases WHERE id = %s", (test_case_id,))
             return self.cursor.fetchone()
         except Exception as e:
-            print(f"Error getting test case: {e}")
+            logger.error(f"Error getting test case: {e}")
             return None
     
     def delete_test_case(self, test_case_id):
         """Delete test case (cascades to stages and results)"""
         try:
+            # Delete in proper order to respect foreign key constraints
+
+            # First, delete test stage results that reference test results related to this test case
+            self.cursor.execute("""
+                DELETE tsr FROM test_stage_results tsr
+                INNER JOIN test_results tr ON tsr.test_result_id = tr.id
+                WHERE tr.test_case_id = %s
+            """, (test_case_id,))
+
+            # Then delete test results that reference this test case
+            self.cursor.execute("DELETE FROM test_results WHERE test_case_id = %s", (test_case_id,))
+
+            # Delete test stages that reference this test case
+            self.cursor.execute("DELETE FROM test_stages WHERE test_case_id = %s", (test_case_id,))
+
+            # Delete jig diagrams that reference this test case
+            self.cursor.execute("DELETE FROM jig_diagrams WHERE test_case_id = %s", (test_case_id,))
+
+            # Delete test statistics that reference this test case
+            self.cursor.execute("DELETE FROM test_statistics WHERE test_case_id = %s", (test_case_id,))
+
+            # Finally, delete the test case itself
             self.cursor.execute("DELETE FROM test_cases WHERE id = %s", (test_case_id,))
+
             self.conn.commit()
+            logger.info(f"Successfully deleted test case {test_case_id} and all related records")
             return True
         except Exception as e:
             self.conn.rollback()
-            print(f"Error deleting test case: {e}")
+            logger.error(f"Error deleting test case: {e}")
             return False
-    
+
+    def delete_test_sequence(self, sequence_id):
+        """Delete a test sequence (alias for delete_test_case, cascades to stages)"""
+        return self.delete_test_case(sequence_id)
+
     def save_test_sequence(self, sequence_name, pcb_type, stages, username):
         """Save a complete test sequence with stages"""
         try:
             # Get user ID
             user_id = self.get_user_id(username)
             if not user_id:
-                print(f"Error: User '{username}' not found")
+                logger.error(f"Error: User '{username}' not found")
                 return False
             
             # Get min/max values from all stages for test_case
@@ -405,7 +437,7 @@ class Database:
             
             return True
         except Exception as e:
-            print(f"Error saving test sequence: {e}")
+            logger.error(f"Error saving test sequence: {e}")
             return False
     
     def save_test_stage(self, test_case_id, stage_number, stage_name, description, 
@@ -424,7 +456,7 @@ class Database:
             return self.cursor.lastrowid
         except Exception as e:
             self.conn.rollback()
-            print(f"Error saving test stage: {e}")
+            logger.error(f"Error saving test stage: {e}")
             return None
     
     def get_test_stages(self, test_case_id: int) -> List[DBRecord]:
@@ -436,7 +468,7 @@ class Database:
             )
             return self.cursor.fetchall()
         except Exception as e:
-            print(f"Error getting test stages: {e}")
+            logger.error(f"Error getting test stages: {e}")
             return []
     
     def get_stage_by_id(self, stage_id):
@@ -445,7 +477,7 @@ class Database:
             self.cursor.execute("SELECT * FROM test_stages WHERE id = %s", (stage_id,))
             return self.cursor.fetchone()
         except Exception as e:
-            print(f"Error getting stage: {e}")
+            logger.error(f"Error getting stage: {e}")
             return None
     
     def save_test_result(self, test_case_id, user_id, pcb_serial_number, status, 
@@ -461,7 +493,7 @@ class Database:
             return self.cursor.lastrowid
         except Exception as e:
             self.conn.rollback()
-            print(f"Error saving test result: {e}")
+            logger.error(f"Error saving test result: {e}")
             return None
     
     def update_test_result_status(self, result_id, status, overall_pass=None):
@@ -475,7 +507,7 @@ class Database:
             return True
         except Exception as e:
             self.conn.rollback()
-            print(f"Error updating test result: {e}")
+            logger.error(f"Error updating test result: {e}")
             return False
     
     def get_test_results(self) -> List[DBRecord]:
@@ -484,16 +516,40 @@ class Database:
             self.cursor.execute("SELECT * FROM test_results ORDER BY start_time DESC")
             return self.cursor.fetchall()
         except Exception as e:
-            print(f"Error getting test results: {e}")
+            logger.error(f"Error getting test results: {e}")
             return []
-    
+
+    def get_test_results_with_measurements(self) -> List[DBRecord]:
+        """Get all test results with their first stage measurements (optimized query)"""
+        try:
+            self.cursor.execute("""
+                SELECT tr.*,
+                       tsr.voltage_measured,
+                       tsr.current_measured,
+                       tsr.resistance_measured
+                FROM test_results tr
+                LEFT JOIN (
+                    SELECT test_result_id,
+                           voltage_measured,
+                           current_measured,
+                           resistance_measured,
+                           ROW_NUMBER() OVER (PARTITION BY test_result_id ORDER BY created_at) as rn
+                    FROM test_stage_results
+                ) tsr ON tr.id = tsr.test_result_id AND tsr.rn = 1
+                ORDER BY tr.start_time DESC
+            """)
+            return self.cursor.fetchall()
+        except Exception as e:
+            logger.error(f"Error getting test results with measurements: {e}")
+            return []
+
     def get_test_result_by_id(self, result_id):
         """Get test result by ID"""
         try:
             self.cursor.execute("SELECT * FROM test_results WHERE id = %s", (result_id,))
             return self.cursor.fetchone()
         except Exception as e:
-            print(f"Error getting test result: {e}")
+            logger.error(f"Error getting test result: {e}")
             return None
     
     def save_stage_result(self, test_result_id, stage_id, voltage_measured, current_measured, 
@@ -510,7 +566,7 @@ class Database:
             return self.cursor.lastrowid
         except Exception as e:
             self.conn.rollback()
-            print(f"Error saving stage result: {e}")
+            logger.error(f"Error saving stage result: {e}")
             return None
     
     def get_stage_results(self, test_result_id):
@@ -522,7 +578,7 @@ class Database:
             )
             return self.cursor.fetchall()
         except Exception as e:
-            print(f"Error getting stage results: {e}")
+            logger.error(f"Error getting stage results: {e}")
             return []
     
     def save_jig_diagram(self, test_case_id, diagram_name, file_path, description, uploaded_by):
@@ -537,7 +593,7 @@ class Database:
             return self.cursor.lastrowid
         except Exception as e:
             self.conn.rollback()
-            print(f"Error saving jig diagram: {e}")
+            logger.error(f"Error saving jig diagram: {e}")
             return None
     
     def get_jig_diagrams(self) -> List[DBRecord]:
@@ -546,7 +602,7 @@ class Database:
             self.cursor.execute("SELECT * FROM jig_diagrams ORDER BY uploaded_at DESC")
             return self.cursor.fetchall()
         except Exception as e:
-            print(f"Error getting jig diagrams: {e}")
+            logger.error(f"Error getting jig diagrams: {e}")
             return []
     
     def delete_jig_diagram(self, diagram_id):
@@ -557,7 +613,7 @@ class Database:
             return True
         except Exception as e:
             self.conn.rollback()
-            print(f"Error deleting jig diagram: {e}")
+            logger.error(f"Error deleting jig diagram: {e}")
             return False
     
     def save_comm_config(self, config_name, com_port, baud_rate, data_bits, stop_bits, 
@@ -573,7 +629,7 @@ class Database:
             return self.cursor.lastrowid
         except Exception as e:
             self.conn.rollback()
-            print(f"Error saving communication config: {e}")
+            logger.error(f"Error saving communication config: {e}")
             return None
     
     def get_comm_config(self) -> Optional[DBRecord]:
@@ -582,7 +638,7 @@ class Database:
             self.cursor.execute("SELECT * FROM communication_config ORDER BY created_at DESC LIMIT 1")
             return self.cursor.fetchone()
         except Exception as e:
-            print(f"Error getting communication config: {e}")
+            logger.error(f"Error getting communication config: {e}")
             return None
     
     def get_all_comm_configs(self) -> List[DBRecord]:
@@ -591,7 +647,7 @@ class Database:
             self.cursor.execute("SELECT * FROM communication_config ORDER BY created_at DESC")
             return self.cursor.fetchall()
         except Exception as e:
-            print(f"Error getting communication configs: {e}")
+            logger.error(f"Error getting communication configs: {e}")
             return []
     
     def update_test_statistics(self, test_case_id):
@@ -625,7 +681,7 @@ class Database:
             return True
         except Exception as e:
             self.conn.rollback()
-            print(f"Error updating test statistics: {e}")
+            logger.error(f"Error updating test statistics: {e}")
             return False
     
     def get_test_statistics(self, test_case_id):
@@ -637,7 +693,7 @@ class Database:
             )
             return self.cursor.fetchone()
         except Exception as e:
-            print(f"Error getting test statistics: {e}")
+            logger.error(f"Error getting test statistics: {e}")
             return None
     
     def log_action(self, user_id, action, entity_type=None, entity_id=None, 
@@ -656,7 +712,7 @@ class Database:
             return self.cursor.lastrowid
         except Exception as e:
             self.conn.rollback()
-            print(f"Error logging action: {e}")
+            logger.error(f"Error logging action: {e}")
             return None
     
     def get_audit_log(self) -> List[DBRecord]:
@@ -665,7 +721,7 @@ class Database:
             self.cursor.execute("SELECT * FROM audit_log ORDER BY timestamp DESC")
             return self.cursor.fetchall()
         except Exception as e:
-            print(f"Error getting audit log: {e}")
+            logger.error(f"Error getting audit log: {e}")
             return []
     
     def export_test_results_to_csv(self, test_case_id=None):
@@ -694,5 +750,5 @@ class Database:
             
             return filename
         except Exception as e:
-            print(f"Error exporting results: {e}")
+            logger.error(f"Error exporting results: {e}")
             return None

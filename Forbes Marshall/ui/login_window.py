@@ -5,10 +5,15 @@ import customtkinter as ctk
 from tkinter import messagebox
 from PIL import Image
 import os
+import logging
 from typing import Dict, Any, Optional
 from data.database import Database, DBRecord
 from ui.dashboard import Dashboard
+from utils.session_manager import SessionManager
 from config.config import LOGIN_WINDOW_SIZE, WINDOW_TITLE, LOGO_PATH, ROLE_TESTER
+
+# Set up logger for this module
+logger = logging.getLogger(__name__)
 
 class LoginWindow(ctk.CTk):
     def __init__(self) -> None:
@@ -17,7 +22,10 @@ class LoginWindow(ctk.CTk):
         self.title(WINDOW_TITLE)
         self.geometry(LOGIN_WINDOW_SIZE)
         self.resizable(False, False)
-        
+
+        # Initialize session manager
+        self.session_manager = SessionManager()
+
         # Initialize database with error handling
         try:
             self.db: Database = Database()
@@ -56,7 +64,7 @@ class LoginWindow(ctk.CTk):
                 logo_label = ctk.CTkLabel(container, image=logo_photo, text="")
                 logo_label.pack(pady=(20, 10))
             except Exception as e:
-                print(f"Error loading logo: {e}")
+                logger.error(f"Error loading logo: {e}")
         
         # Title
         title_label = ctk.CTkLabel(
@@ -118,25 +126,33 @@ class LoginWindow(ctk.CTk):
         """Handle login"""
         username: str = self.username_entry.get().strip()
         password: str = self.password_entry.get().strip()
-        
+
         if not username or not password:
             messagebox.showerror("Validation Error", "Please enter both username and password")
             return
-        
+
         try:
             user_data: Optional[DBRecord] = self.db.authenticate_user(username, password)
-            
+
             if user_data:
-                # Extract role from the user data dictionary - ensure it's a string
+                # Extract user information
+                user_id = user_data.get('id')
                 role_value: Any = user_data.get('role') if isinstance(user_data, dict) else None
                 role: str = role_value if isinstance(role_value, str) else ROLE_TESTER
-                
-                self.withdraw()
-                dashboard: Dashboard = Dashboard(username, role, self)
-                dashboard.mainloop()
+
+                # Create session
+                if self.session_manager.create_session(user_id, username, role):
+                    logger.info(f"Session created for user: {username}")
+
+                    self.withdraw()
+                    dashboard: Dashboard = Dashboard(username, role, self, self.session_manager)
+                    dashboard.mainloop()
+                else:
+                    messagebox.showerror("Session Error", "Failed to create session")
             else:
                 messagebox.showerror("Authentication Failed", "Invalid username or password")
                 self.password_entry.delete(0, 'end')
         except Exception as e:
+            logger.error(f"Login error: {e}")
             messagebox.showerror("Login Error", f"An error occurred during login:\n{str(e)}")
             self.password_entry.delete(0, 'end')

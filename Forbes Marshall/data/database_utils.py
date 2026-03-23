@@ -8,8 +8,13 @@ import os
 import csv
 import json
 import subprocess
+import tempfile
+import logging
 from datetime import datetime
 from config.config import DB_HOST, DB_USER, DB_PASSWORD, DB_NAME, DB_PORT
+
+# Set up logger for this module
+logger = logging.getLogger(__name__)
 
 class DatabaseUtilities:
     """Utilities for database maintenance and backup"""
@@ -39,7 +44,7 @@ class DatabaseUtilities:
                 port=self.db_port
             )
         except Error as e:
-            print(f"Connection error: {e}")
+            logger.error(f"Connection error: {e}")
             return None
     
     # ============== BACKUP OPERATIONS ==============
@@ -47,90 +52,128 @@ class DatabaseUtilities:
     def create_backup(self, backup_name=None):
         """
         Create a backup of the database using mysqldump
-        
+
         Args:
             backup_name (str): Custom backup name, defaults to timestamp
-            
+
         Returns:
             str: Path to backup file
         """
         if backup_name is None:
             timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
             backup_name = f'pcb_testing_backup_{timestamp}.sql'
-        
+
         backup_path = os.path.join(self.backup_dir, backup_name)
-        
+
+        # Create temporary MySQL config file to avoid password on command line
+        config_content = f"""[client]
+host={self.db_host}
+port={self.db_port}
+user={self.db_user}
+password={self.db_password}
+"""
+
         try:
-            # Construct mysqldump command
-            cmd = [
-                'mysqldump',
-                f'-h{self.db_host}',
-                f'-u{self.db_user}',
-                f'-p{self.db_password}',
-                f'-P{self.db_port}',
-                '--routines',
-                '--triggers',
-                self.db_name
-            ]
-            
-            with open(backup_path, 'w') as f:
-                process = subprocess.Popen(cmd, stdout=f, stderr=subprocess.PIPE)
-                _, stderr = process.communicate()
-                
-                if process.returncode == 0:
-                    print(f"✓ Backup created: {backup_path}")
-                    return backup_path
-                else:
-                    print(f"Backup error: {stderr.decode()}")
-                    return None
-                    
+            # Create temporary config file with secure permissions
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.cnf', delete=False) as config_file:
+                config_file.write(config_content)
+                config_path = config_file.name
+
+            try:
+                # Set file permissions to read-only for owner (Unix-like systems)
+                if os.name != 'nt':  # Not Windows
+                    os.chmod(config_path, 0o600)
+
+                # Construct mysqldump command without password
+                cmd = [
+                    'mysqldump',
+                    f'--defaults-extra-file={config_path}',
+                    '--routines',
+                    '--triggers',
+                    self.db_name
+                ]
+
+                with open(backup_path, 'w') as f:
+                    process = subprocess.Popen(cmd, stdout=f, stderr=subprocess.PIPE)
+                    _, stderr = process.communicate()
+
+                    if process.returncode == 0:
+                        logger.info(f"✓ Backup created: {backup_path}")
+                        return backup_path
+                    else:
+                        logger.error(f"Backup error: {stderr.decode()}")
+                        return None
+            finally:
+                # Always clean up the temporary config file
+                if os.path.exists(config_path):
+                    os.remove(config_path)
+
         except FileNotFoundError:
-            print("mysqldump not found. Ensure MySQL is installed and in system PATH.")
+            logger.error("mysqldump not found. Ensure MySQL is installed and in system PATH.")
             return None
         except Exception as e:
-            print(f"Backup error: {e}")
+            logger.error(f"Backup error: {e}")
             return None
     
     def restore_backup(self, backup_file):
         """
         Restore database from backup file
-        
+
         Args:
             backup_file (str): Path to backup file
-            
+
         Returns:
             bool: Success status
         """
         if not os.path.exists(backup_file):
-            print(f"Backup file not found: {backup_file}")
+            logger.error(f"Backup file not found: {backup_file}")
             return False
-        
+
+        # Create temporary MySQL config file to avoid password on command line
+        config_content = f"""[client]
+host={self.db_host}
+port={self.db_port}
+user={self.db_user}
+password={self.db_password}
+"""
+
         try:
-            cmd = [
-                'mysql',
-                f'-h{self.db_host}',
-                f'-u{self.db_user}',
-                f'-p{self.db_password}',
-                f'-P{self.db_port}',
-                self.db_name
-            ]
-            
-            with open(backup_file, 'r') as f:
-                process = subprocess.Popen(cmd, stdin=f, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-                _, stderr = process.communicate()
-                
-                if process.returncode == 0:
-                    print(f"✓ Database restored from: {backup_file}")
-                    return True
-                else:
-                    print(f"Restore error: {stderr.decode()}")
-                    return False
-                    
+            # Create temporary config file with secure permissions
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.cnf', delete=False) as config_file:
+                config_file.write(config_content)
+                config_path = config_file.name
+
+            try:
+                # Set file permissions to read-only for owner (Unix-like systems)
+                if os.name != 'nt':  # Not Windows
+                    os.chmod(config_path, 0o600)
+
+                cmd = [
+                    'mysql',
+                    f'--defaults-extra-file={config_path}',
+                    self.db_name
+                ]
+
+                with open(backup_file, 'r') as f:
+                    process = subprocess.Popen(cmd, stdin=f, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+                    _, stderr = process.communicate()
+
+                    if process.returncode == 0:
+                        logger.info(f"✓ Database restored from: {backup_file}")
+                        return True
+                    else:
+                        logger.error(f"Restore error: {stderr.decode()}")
+                        return False
+            finally:
+                # Always clean up the temporary config file
+                if os.path.exists(config_path):
+                    os.remove(config_path)
+
         except FileNotFoundError:
-            print("mysql not found. Ensure MySQL is installed and in system PATH.")
+            logger.error("mysql not found. Ensure MySQL is installed and in system PATH.")
             return False
         except Exception as e:
-            print(f"Restore error: {e}")
+            logger.error(f"Restore error: {e}")
             return False
     
     def list_backups(self):
@@ -139,7 +182,7 @@ class DatabaseUtilities:
             backups = [f for f in os.listdir(self.backup_dir) if f.endswith('.sql')]
             return sorted(backups, reverse=True)
         except Exception as e:
-            print(f"Error listing backups: {e}")
+            logger.error(f"Error listing backups: {e}")
             return []
     
     # ============== MAINTENANCE OPERATIONS ==============
@@ -150,25 +193,34 @@ class DatabaseUtilities:
             conn = self.connect()
             if not conn:
                 return False
-            
+
             cursor = conn.cursor()
-            
-            # Check all tables
-            cursor.execute(f"SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = '{self.db_name}'")
+
+            # Check all tables - use parameterized query for table_schema
+            cursor.execute(
+                "SELECT COUNT(*) FROM information_schema.tables WHERE table_schema = %s",
+                (self.db_name,)
+            )
             table_count = cursor.fetchone()[0]
-            
-            # Check for any errors
-            cursor.execute(f"CHECK TABLE users, test_cases, test_results, test_stages, test_stage_results, jig_diagrams, communication_config, test_statistics, audit_log")
+
+            # CHECK TABLE requires table names - validate against whitelist
+            allowed_tables = ['users', 'test_cases', 'test_results', 'test_stages',
+                            'test_stage_results', 'jig_diagrams', 'communication_config',
+                            'test_statistics', 'audit_log']
+
+            # Build safe CHECK TABLE query with validated table names
+            check_query = "CHECK TABLE " + ", ".join(allowed_tables)
+            cursor.execute(check_query)
             results = cursor.fetchall()
-            
+
             cursor.close()
             conn.close()
-            
+
             all_ok = all(row[3] == 'OK' for row in results if len(row) > 3)
             return all_ok and table_count > 0
-            
+
         except Exception as e:
-            print(f"Integrity check error: {e}")
+            logger.error(f"Integrity check error: {e}")
             return False
     
     def vacuum_database(self):
@@ -177,22 +229,23 @@ class DatabaseUtilities:
             conn = self.connect()
             if not conn:
                 return False
-            
+
             cursor = conn.cursor()
-            tables = ['users', 'test_cases', 'test_results', 'test_stages', 'test_stage_results', 
-                     'jig_diagrams', 'communication_config', 'test_statistics', 'audit_log']
-            
-            for table in tables:
+            allowed_tables = ['users', 'test_cases', 'test_results', 'test_stages', 'test_stage_results',
+                            'jig_diagrams', 'communication_config', 'test_statistics', 'audit_log']
+
+            for table in allowed_tables:
+                # OPTIMIZE TABLE requires table name - use whitelist validation
                 cursor.execute(f"OPTIMIZE TABLE {table}")
-                print(f"  Optimized {table}")
-            
+                logger.info(f"  Optimized {table}")
+
             conn.commit()
             cursor.close()
             conn.close()
             return True
-            
+
         except Exception as e:
-            print(f"Vacuum error: {e}")
+            logger.error(f"Vacuum error: {e}")
             return False
     
     def get_database_stats(self):
@@ -201,80 +254,90 @@ class DatabaseUtilities:
             conn = self.connect()
             if not conn:
                 return None
-            
+
             cursor = conn.cursor(dictionary=True)
             stats = {}
-            
-            # Get table sizes
-            cursor.execute(f"""
-                SELECT 
+
+            # Get table sizes - use parameterized query
+            cursor.execute("""
+                SELECT
                     TABLE_NAME,
-                    ROUND(((data_length + index_length) / 1024 / 1024), 2) AS 'Size_MB'
+                    ROUND(((data_length + index_length) / 1024 / 1024), 2) AS Size_MB
                 FROM information_schema.TABLES
-                WHERE TABLE_SCHEMA = '{self.db_name}'
+                WHERE TABLE_SCHEMA = %s
                 ORDER BY (data_length + index_length) DESC
-            """)
-            
+            """, (self.db_name,))
+
             tables = cursor.fetchall()
             total_size = 0
             stats['tables'] = {}
-            
+
             for table in tables:
                 size = table['Size_MB'] or 0
                 stats['tables'][table['TABLE_NAME']] = size
                 total_size += size
-            
+
             stats['total_size_mb'] = round(total_size, 2)
-            
-            # Get row counts
-            cursor.execute(f"""
-                SELECT 
+
+            # Get row counts - use parameterized query
+            cursor.execute("""
+                SELECT
                     TABLE_NAME,
                     TABLE_ROWS
                 FROM information_schema.TABLES
-                WHERE TABLE_SCHEMA = '{self.db_name}'
-            """)
-            
+                WHERE TABLE_SCHEMA = %s
+            """, (self.db_name,))
+
             stats['row_counts'] = {row['TABLE_NAME']: row['TABLE_ROWS'] or 0 for row in cursor.fetchall()}
-            
+
             cursor.close()
             conn.close()
             return stats
-            
+
         except Exception as e:
-            print(f"Error getting stats: {e}")
+            logger.error(f"Error getting stats: {e}")
             return None
     
     # ============== DATA EXPORT OPERATIONS ==============
     
     def export_table_to_csv(self, table_name, output_file=None):
         """Export table to CSV"""
+        # Whitelist of allowed table names to prevent SQL injection
+        allowed_tables = ['users', 'test_cases', 'test_results', 'test_stages',
+                         'test_stage_results', 'jig_diagrams', 'communication_config',
+                         'test_statistics', 'audit_log']
+
+        if table_name not in allowed_tables:
+            logger.error(f"Invalid table name: {table_name}")
+            return None
+
         try:
             if output_file is None:
                 timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
                 output_file = os.path.join('data', f'{table_name}_{timestamp}.csv')
-            
+
             conn = self.connect()
             if not conn:
                 return None
-            
+
             cursor = conn.cursor(dictionary=True)
+            # Table name validated against whitelist, safe to use
             cursor.execute(f"SELECT * FROM {table_name}")
             rows = cursor.fetchall()
-            
+
             if rows:
                 with open(output_file, 'w', newline='', encoding='utf-8') as f:
                     writer = csv.DictWriter(f, fieldnames=rows[0].keys())
                     writer.writeheader()
                     for row in rows:
                         writer.writerow(row)
-            
+
             cursor.close()
             conn.close()
             return output_file
-            
+
         except Exception as e:
-            print(f"Export error: {e}")
+            logger.error(f"Export error: {e}")
             return None
     
     def export_test_results_detailed(self, output_file=None):
@@ -330,7 +393,7 @@ class DatabaseUtilities:
             return output_file
             
         except Exception as e:
-            print(f"Export error: {e}")
+            logger.error(f"Export error: {e}")
             return None
     
     # ============== DATA CLEANUP OPERATIONS ==============
@@ -338,47 +401,63 @@ class DatabaseUtilities:
     def delete_old_test_results(self, days=90):
         """Delete test results older than specified days"""
         try:
+            # Validate days parameter (must be positive integer)
+            days = int(days)
+            if days <= 0:
+                logger.error("Days parameter must be positive")
+                return False
+
             conn = self.connect()
             if not conn:
                 return False
-            
+
             cursor = conn.cursor()
+            # Use parameterized query to prevent SQL injection
             cursor.execute(
-                f"DELETE FROM test_results WHERE created_at < DATE_SUB(NOW(), INTERVAL {days} DAY)"
+                "DELETE FROM test_results WHERE created_at < DATE_SUB(NOW(), INTERVAL %s DAY)",
+                (days,)
             )
             rows_deleted = cursor.rowcount
             conn.commit()
             cursor.close()
             conn.close()
-            
-            print(f"✓ Deleted {rows_deleted} test results older than {days} days")
+
+            logger.info(f"✓ Deleted {rows_deleted} test results older than {days} days")
             return True
-            
+
         except Exception as e:
-            print(f"Cleanup error: {e}")
+            logger.error(f"Cleanup error: {e}")
             return False
     
     def delete_old_audit_logs(self, days=180):
         """Delete audit logs older than specified days"""
         try:
+            # Validate days parameter (must be positive integer)
+            days = int(days)
+            if days <= 0:
+                logger.error("Days parameter must be positive")
+                return False
+
             conn = self.connect()
             if not conn:
                 return False
-            
+
             cursor = conn.cursor()
+            # Use parameterized query to prevent SQL injection
             cursor.execute(
-                f"DELETE FROM audit_log WHERE timestamp < DATE_SUB(NOW(), INTERVAL {days} DAY)"
+                "DELETE FROM audit_log WHERE timestamp < DATE_SUB(NOW(), INTERVAL %s DAY)",
+                (days,)
             )
             rows_deleted = cursor.rowcount
             conn.commit()
             cursor.close()
             conn.close()
-            
-            print(f"✓ Deleted {rows_deleted} audit logs older than {days} days")
+
+            logger.info(f"✓ Deleted {rows_deleted} audit logs older than {days} days")
             return True
-            
+
         except Exception as e:
-            print(f"Cleanup error: {e}")
+            logger.error(f"Cleanup error: {e}")
             return False
     
     # ============== REPORTING OPERATIONS ==============
@@ -430,7 +509,7 @@ class DatabaseUtilities:
             return report
             
         except Exception as e:
-            print(f"Report generation error: {e}")
+            logger.error(f"Report generation error: {e}")
             return None
     
     def export_report_to_json(self, output_file=None):
@@ -450,9 +529,9 @@ class DatabaseUtilities:
             with open(output_file, 'w', encoding='utf-8') as f:
                 json.dump(report, f, indent=2, default=str)
             
-            print(f"✓ Report exported to: {output_file}")
+            logger.info(f"✓ Report exported to: {output_file}")
             return output_file
             
         except Exception as e:
-            print(f"Export error: {e}")
+            logger.error(f"Export error: {e}")
             return None

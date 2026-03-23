@@ -4,6 +4,7 @@ Advanced Test Window - Run multi-stage test sequences
 import customtkinter as ctk
 from tkinter import messagebox
 from data.database import Database, DBRecord
+from config.config import STATUS_PASS, STATUS_FAIL
 import time
 import logging
 import traceback
@@ -31,12 +32,9 @@ class AdvancedTestWindow(ctk.CTkFrame):
         self.after(100, lambda: self.pcb_id_entry.focus())
     
     def center_window(self) -> None:
-        """Placeholder for compatibility"""
+        """Placeholder for compatibility - not used in embedded mode"""
         pass
-        x: int = (self.winfo_screenwidth() // 2) - (width // 2)
-        y: int = (self.winfo_screenheight() // 2) - (height // 2)
-        self.geometry(f'{width}x{height}+{x}+{y}')
-    
+
     def create_widgets(self) -> None:
         """Create advanced test UI"""
         # Main container
@@ -255,7 +253,7 @@ class AdvancedTestWindow(ctk.CTkFrame):
                     text_color="gray"
                 ).pack(padx=10, pady=5)
             except Exception as e:
-                print(f"Error displaying stage {idx + 1}: {e}")
+                logger.error(f"Error displaying stage {idx + 1}: {e}")
                 ctk.CTkLabel(
                     self.stages_frame,
                     text=f"Error loading stage {idx + 1}",
@@ -326,7 +324,7 @@ class AdvancedTestWindow(ctk.CTkFrame):
                 stage_passed = voltage_ok and current_ok and resistance_ok
                 
                 # Store status in stage_info for later saving
-                stage_info['stage_status'] = 'PASS' if stage_passed else 'FAIL'
+                stage_info['stage_status'] = STATUS_PASS if stage_passed else STATUS_FAIL
                 if not stage_passed:
                     if not voltage_ok:
                         stage_info['failure_reason'] = f'Voltage out of range: {voltage:.2f}V'
@@ -355,7 +353,7 @@ class AdvancedTestWindow(ctk.CTkFrame):
                 all_passed = False
         
         # Save overall result
-        overall_status = "PASS" if all_passed else "FAIL"
+        overall_status = STATUS_PASS if all_passed else STATUS_FAIL
         notes = f"Multi-stage test: {self.current_sequence['name']}"
         if failed_stages:
             notes += f" | Failed stages: {', '.join(failed_stages)}"
@@ -376,7 +374,7 @@ class AdvancedTestWindow(ctk.CTkFrame):
                 'voltage': stage_info.get('voltage_measured', 0),
                 'current': stage_info.get('current_measured', 0),
                 'resistance': stage_info.get('resistance_measured', 0),
-                'status': stage_info.get('stage_status', 'FAIL')
+                'status': stage_info.get('stage_status', STATUS_FAIL)
             })
         
         test_result_id = self.db.save_test_result(
@@ -398,7 +396,7 @@ class AdvancedTestWindow(ctk.CTkFrame):
                     voltage_measured=stage_info.get('voltage_measured', 0),
                     current_measured=stage_info.get('current_measured', 0),
                     resistance_measured=stage_info.get('resistance_measured', 0),
-                    status=stage_info.get('stage_status', 'FAIL'),
+                    status=stage_info.get('stage_status', STATUS_FAIL),
                     failure_reason=stage_info.get('failure_reason')
                 )
         
