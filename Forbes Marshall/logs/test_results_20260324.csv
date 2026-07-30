@@ -1,0 +1,4 @@
+Timestamp,PCB ID,Tester,Status,Voltage (V),Current (A),Resistance (Ω),Test Result,Notes
+2026-03-24 09:14:06,121,admin,Fail,4.80,2.00,233.00,Fail,
+2026-03-24 09:24:15,234,admin,Fail,324.00,345.00,123.00,Fail,test5
+2026-03-24 11:28:48,6562,admin,Pass,5.00,0.70,100.00,Pass,

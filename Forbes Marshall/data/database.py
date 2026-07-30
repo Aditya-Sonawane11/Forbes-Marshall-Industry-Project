@@ -439,7 +439,62 @@ class Database:
         except Exception as e:
             logger.error(f"Error saving test sequence: {e}")
             return False
-    
+
+    def update_test_sequence(self, test_case_id, sequence_name, pcb_type, stages, username):
+        """Update an existing test sequence with stages"""
+        try:
+            # Get user ID
+            user_id = self.get_user_id(username)
+            if not user_id:
+                logger.error(f"Error: User '{username}' not found")
+                return False
+
+            # Get min/max values from all stages for test_case
+            v_min = min([stage['voltage_min'] for stage in stages])
+            v_max = max([stage['voltage_max'] for stage in stages])
+            c_min = min([stage['current_min'] for stage in stages])
+            c_max = max([stage['current_max'] for stage in stages])
+            r_min = min([stage['resistance_min'] for stage in stages])
+            r_max = max([stage['resistance_max'] for stage in stages])
+
+            # Update test case basic info
+            self.cursor.execute(
+                """UPDATE test_cases SET
+                   name = %s, description = %s,
+                   voltage_min = %s, voltage_max = %s,
+                   current_min = %s, current_max = %s,
+                   resistance_min = %s, resistance_max = %s,
+                   updated_at = NOW()
+                   WHERE id = %s""",
+                (sequence_name, pcb_type, v_min, v_max, c_min, c_max, r_min, r_max, test_case_id)
+            )
+
+            # Delete existing stages for this test case
+            self.cursor.execute("DELETE FROM test_stages WHERE test_case_id = %s", (test_case_id,))
+
+            # Save new stages
+            for stage_number, stage in enumerate(stages, start=1):
+                stage_name = stage.get('name', f'Stage {stage_number}')
+                self.save_test_stage(
+                    test_case_id=test_case_id,
+                    stage_number=stage_number,
+                    stage_name=stage_name,
+                    description=f'Stage {stage_number}: {stage_name}',
+                    voltage_min=stage['voltage_min'],
+                    voltage_max=stage['voltage_max'],
+                    current_min=stage['current_min'],
+                    current_max=stage['current_max'],
+                    resistance_min=stage['resistance_min'],
+                    resistance_max=stage['resistance_max']
+                )
+
+            logger.info(f"Successfully updated test sequence ID {test_case_id} with {len(stages)} stages")
+            return True
+
+        except Exception as e:
+            logger.error(f"Error updating test sequence ID {test_case_id}: {e}")
+            return False
+
     def save_test_stage(self, test_case_id, stage_number, stage_name, description, 
                        voltage_min, voltage_max, current_min, current_max, 
                        resistance_min, resistance_max):

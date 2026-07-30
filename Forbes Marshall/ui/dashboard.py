@@ -317,21 +317,21 @@ class Dashboard(ctk.CTkToplevel):
         """Show dashboard welcome view with statistics and charts"""
         if self.current_view:
             self.current_view.pack_forget()
-        
+
         self.current_view = ctk.CTkFrame(self.main_content)
         self.current_view.pack(fill="both", expand=True, padx=15, pady=15)
-        
-        # Title section
+
+        # Title section with refresh button
         title_section = ctk.CTkFrame(self.current_view, fg_color="transparent")
         title_section.pack(fill="x", pady=(0, 20))
-        
+
         welcome_label = ctk.CTkLabel(
             title_section,
             text=f"Welcome, {self.username}!",
             font=ctk.CTkFont(size=28, weight="bold")
         )
         welcome_label.pack(side="left", padx=10)
-        
+
         info_label = ctk.CTkLabel(
             title_section,
             text="PCB Testing Automation System - Phase 1",
@@ -339,37 +339,83 @@ class Dashboard(ctk.CTkToplevel):
             text_color="gray"
         )
         info_label.pack(side="left", padx=10)
-        
+
+        # Refresh button
+        refresh_btn = ctk.CTkButton(
+            title_section,
+            text="🔄 Refresh Data",
+            width=120,
+            height=35,
+            font=ctk.CTkFont(size=12),
+            fg_color="#007bff",
+            hover_color="#0056b3",
+            command=self.refresh_dashboard
+        )
+        refresh_btn.pack(side="right", padx=10)
+
+        # Last updated label
+        self.last_updated_label = ctk.CTkLabel(
+            title_section,
+            text="",
+            font=ctk.CTkFont(size=10),
+            text_color="gray"
+        )
+        self.last_updated_label.pack(side="right", padx=5)
+
         # Main content: Recent Batches and Analytics
         content_container = ctk.CTkFrame(self.current_view, fg_color="transparent")
         content_container.pack(fill="both", expand=True)
-        
+
         # Left side - Recent Batches and Errors
         left_panel = ctk.CTkFrame(content_container, fg_color="#2A2A2A", corner_radius=10)
         left_panel.pack(side="left", fill="both", expand=True, padx=(0, 10))
-        
+
         ctk.CTkLabel(
             left_panel,
-            text="Recent Batches Summary",
+            text="📊 Recent Batches Summary",
             font=ctk.CTkFont(size=13, weight="bold")
         ).pack(pady=15, padx=15, anchor="w")
-        
-        # Get recent batches (simulated data - using test results)
+
+        # Get recent batches (using test results)
         batches_data = self._get_recent_batches()
+        logger.info(f"Dashboard: Loaded {len(batches_data)} batches")
+
         batches_frame = ctk.CTkScrollableFrame(left_panel, fg_color="#2A2A2A")
         batches_frame.pack(fill="both", expand=True, padx=15, pady=(0, 15))
-        
-        for batch in batches_data[:5]:
-            batch_item = ctk.CTkFrame(batches_frame, fg_color="#3D3D3D", corner_radius=8)
-            batch_item.pack(fill="x", pady=5)
-            
-            batch_label = ctk.CTkLabel(
-                batch_item,
-                text=f"Batch #{batch['id']}: {batch['yield']}% Yield",
-                font=ctk.CTkFont(size=11),
-                text_color="lightgreen"
-            )
-            batch_label.pack(pady=10, padx=10, anchor="w")
+
+        if batches_data:
+            for batch in batches_data[:5]:
+                batch_item = ctk.CTkFrame(batches_frame, fg_color="#3D3D3D", corner_radius=8)
+                batch_item.pack(fill="x", pady=5)
+
+                yield_pct = batch.get('yield', 0)
+                yield_color = "lightgreen" if yield_pct >= 80 else "orange" if yield_pct >= 60 else "#FF9999"
+
+                batch_label = ctk.CTkLabel(
+                    batch_item,
+                    text=f"Batch #{batch['id']}: {yield_pct}% Yield",
+                    font=ctk.CTkFont(size=11),
+                    text_color=yield_color
+                )
+                batch_label.pack(pady=10, padx=10, anchor="w")
+        else:
+            # No batches message
+            no_batches_frame = ctk.CTkFrame(batches_frame, fg_color="transparent")
+            no_batches_frame.pack(fill="both", expand=True, pady=20)
+
+            ctk.CTkLabel(
+                no_batches_frame,
+                text="📭 No test batches yet",
+                font=ctk.CTkFont(size=12, weight="bold"),
+                text_color="gray"
+            ).pack(pady=(10, 5))
+
+            ctk.CTkLabel(
+                no_batches_frame,
+                text="Run tests to see batch results here",
+                font=ctk.CTkFont(size=10),
+                text_color="gray"
+            ).pack()
         
         # Separator
         sep = ctk.CTkFrame(left_panel, height=1, fg_color="gray30")
@@ -494,7 +540,12 @@ class Dashboard(ctk.CTkToplevel):
             passed: int = sum(1 for r in results if r.get('overall_pass') or r.get('status') == STATUS_PASS)
             failed: int = total - passed
             pass_rate: int = int((passed / total * 100) if total > 0 else 0)
-            
+
+            logger.info(f"Dashboard stats: Total={total}, Passed={passed}, Failed={failed}, PassRate={pass_rate}%")
+
+            # Update last updated label
+            self._update_last_refreshed()
+
             return {
                 'total_tests': total,
                 'passed_tests': passed,
@@ -515,52 +566,80 @@ class Dashboard(ctk.CTkToplevel):
                 'pass_rate': 0,
                 'test_status': {'passed': 0, 'failed': 0, 'not_run': 0}
             }
+
+    def _update_last_refreshed(self) -> None:
+        """Update the last refreshed timestamp"""
+        from datetime import datetime
+        if hasattr(self, 'last_updated_label'):
+            now = datetime.now().strftime("%H:%M:%S")
+            self.last_updated_label.configure(text=f"Last updated: {now}")
+
+    def refresh_dashboard(self) -> None:
+        """Refresh dashboard data"""
+        logger.info("Refreshing dashboard data...")
+        # Re-show the dashboard to reload all data
+        self.show_dashboard()
+        messagebox.showinfo("Refreshed", "Dashboard data has been refreshed!")
     
     def _get_recent_batches(self) -> List[Dict[str, Any]]:
         """Get recent batch data"""
         try:
             results: List[DBRecord] = self.db.get_test_results()
+            logger.info(f"Dashboard: Retrieved {len(results)} test results for batch calculation")
+
+            if not results:
+                logger.info("Dashboard: No test results found in database")
+                return []
+
             batches: Dict[int, Dict[str, Any]] = {}
-            
+
             for result in results:
                 batch_id: int = int(result.get('id', 0))
                 passed: bool = result.get('overall_pass', False) or result.get('status') == STATUS_PASS
-                
+
                 if batch_id not in batches:
                     batches[batch_id] = {'id': batch_id, 'total': 0, 'passed': 0}
-                
+
                 batches[batch_id]['total'] += 1
                 if passed:
                     batches[batch_id]['passed'] += 1
-            
+
             batch_list = []
             for batch_id in sorted(batches.keys(), reverse=True):
                 batch = batches[batch_id]
                 yield_pct: int = int((batch['passed'] / batch['total'] * 100) if batch['total'] > 0 else 0)
                 batch_list.append({'id': batch_id, 'yield': yield_pct})
-            
+
+            logger.info(f"Dashboard: Processed {len(batch_list)} batches")
             return batch_list
         except Exception as e:
             logger.error(f"Error getting batches: {e}")
-            return [{'id': i, 'yield': 100} for i in range(1, 6)]
+            return []
     
     def _get_recent_errors(self) -> List[Dict[str, Any]]:
         """Get recent errors from test results"""
         try:
             results: List[DBRecord] = self.db.get_test_results()
             errors = []
-            
+
             for result in results:
+                # Check for failed tests
+                status = result.get('status', '')
+                overall_pass = result.get('overall_pass', False)
                 notes: str = result.get('notes', '')
-                if notes and notes.lower() != 'pass':
+
+                # If test failed, add to errors
+                if status == 'Fail' or (not overall_pass and status != 'Pass'):
+                    error_msg = notes[:50] if notes else f"Test #{result.get('id', 'N/A')} Failed"
                     errors.append({
-                        'error_code': notes[:30],
+                        'error_code': error_msg,
                         'test_id': result.get('id')
                     })
-            
-            return errors[:5]
+
+            logger.info(f"Dashboard: Found {len(errors)} recent errors")
+            return errors[:10]  # Return max 10 recent errors
         except Exception as e:
-            logger.error(f"Error getting errors: {e}")
+            logger.error(f"Error getting recent errors: {e}")
             return []
     
     def _draw_pie_chart(self, parent: ctk.CTkFrame, stats: Dict[str, Any]) -> None:

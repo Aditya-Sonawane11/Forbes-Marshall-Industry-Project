@@ -7,7 +7,8 @@ from PIL import Image
 import os
 import logging
 from typing import Dict, Any, Optional
-from data.database import Database, DBRecord
+from data.api_client import ApiClient as Database
+from data.database import DBRecord
 from ui.dashboard import Dashboard
 from utils.session_manager import SessionManager
 from config.config import LOGIN_WINDOW_SIZE, WINDOW_TITLE, LOGO_PATH, ROLE_TESTER

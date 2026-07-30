@@ -20,6 +20,10 @@ class StageBuilderWindow(ctk.CTkFrame):
         self.db: Database = Database()
         self.stages: List[DBRecord] = []
 
+        # Edit mode variables
+        self.edit_mode: bool = False
+        self.current_edit_sequence_id: Optional[int] = None
+
         self.center_window()
         self.create_widgets()
         self.load_sequences()
@@ -41,7 +45,20 @@ class StageBuilderWindow(ctk.CTkFrame):
             font=ctk.CTkFont(size=24, weight="bold")
         )
         title_label.pack(pady=(10, 20))
-        
+
+        # Save button at top (prominent position)
+        top_save_btn = ctk.CTkButton(
+            container,
+            text="💾 Save Test Sequence",
+            width=300,
+            height=50,
+            font=ctk.CTkFont(size=16, weight="bold"),
+            fg_color="#28a745",
+            hover_color="#218838",
+            command=self.save_sequence
+        )
+        top_save_btn.pack(pady=(0, 20))
+
         # Two column layout
         content_frame = ctk.CTkFrame(container)
         content_frame.pack(fill="both", expand=True, padx=10, pady=10)
@@ -143,34 +160,22 @@ class StageBuilderWindow(ctk.CTkFrame):
         self.stages_list_frame = ctk.CTkScrollableFrame(left_frame, height=150)
         self.stages_list_frame.pack(pady=5, padx=20, fill="both")
 
-        # Action buttons frame
+        # Action buttons frame (only for Clear button)
         action_frame = ctk.CTkFrame(left_frame)
         action_frame.pack(pady=15, padx=20, fill="x")
-
-        # Save sequence button (more prominent)
-        save_seq_btn = ctk.CTkButton(
-            action_frame,
-            text="💾 Save Test Sequence",
-            width=250,
-            height=45,
-            font=ctk.CTkFont(size=14, weight="bold"),
-            fg_color="#28a745",
-            hover_color="#218838",
-            command=self.save_sequence
-        )
-        save_seq_btn.pack(pady=5)
 
         # Clear all button
         clear_btn = ctk.CTkButton(
             action_frame,
-            text="Clear All Stages",
+            text="🗑️ Clear All Stages",
             width=200,
             height=35,
+            font=ctk.CTkFont(size=12),
             fg_color="#6c757d",
             hover_color="#5a6268",
             command=self.clear_all_stages
         )
-        clear_btn.pack(pady=(5, 0))
+        clear_btn.pack(pady=5)
         
         # Right side - Saved sequences
         right_frame = ctk.CTkFrame(content_frame)
@@ -309,12 +314,13 @@ class StageBuilderWindow(ctk.CTkFrame):
             if messagebox.askyesno("Confirm", "Are you sure you want to clear all stages?"):
                 self.stages.clear()
                 self.update_stages_list()
+                self.exit_edit_mode()  # Exit edit mode when clearing
                 messagebox.showinfo("Cleared", "All stages have been cleared.")
         else:
             messagebox.showinfo("Info", "No stages to clear.")
 
     def save_sequence(self):
-        """Save the test sequence"""
+        """Save or update the test sequence"""
         sequence_name = self.sequence_name_entry.get().strip()
         pcb_type = self.pcb_type_entry.get().strip()
 
@@ -332,9 +338,10 @@ class StageBuilderWindow(ctk.CTkFrame):
             messagebox.showerror("Validation Error", "Please add at least one test stage")
             return
 
-        # Show saving notification
+        # Show saving/updating notification
+        operation = "Updating" if self.edit_mode else "Saving"
         saving_window = ctk.CTkToplevel(self)
-        saving_window.title("Saving...")
+        saving_window.title(f"{operation}...")
         saving_window.geometry("300x100")
         saving_window.resizable(False, False)
 
@@ -346,7 +353,7 @@ class StageBuilderWindow(ctk.CTkFrame):
 
         ctk.CTkLabel(
             saving_window,
-            text="Saving test sequence...",
+            text=f"{operation} test sequence...",
             font=ctk.CTkFont(size=14)
         ).pack(expand=True)
 
@@ -355,40 +362,57 @@ class StageBuilderWindow(ctk.CTkFrame):
         saving_window.update()
 
         try:
-            success = self.db.save_test_sequence(sequence_name, pcb_type, self.stages, self.username)
-            logger.info(f"Save sequence result: {success} for sequence '{sequence_name}' with {len(self.stages)} stages")
+            if self.edit_mode:
+                # Update existing sequence
+                success = self.db.update_test_sequence(
+                    self.current_edit_sequence_id,
+                    sequence_name,
+                    pcb_type,
+                    self.stages,
+                    self.username
+                )
+                operation_text = "updated"
+                log_text = f"Update sequence result: {success} for sequence '{sequence_name}' (ID: {self.current_edit_sequence_id}) with {len(self.stages)} stages"
+            else:
+                # Create new sequence
+                success = self.db.save_test_sequence(sequence_name, pcb_type, self.stages, self.username)
+                operation_text = "saved"
+                log_text = f"Save sequence result: {success} for sequence '{sequence_name}' with {len(self.stages)} stages"
+
+            logger.info(log_text)
 
             # Close saving window
             saving_window.destroy()
 
             if success:
-                logger.info(f"Successfully saved test sequence: {sequence_name}")
+                logger.info(f"Successfully {operation_text} test sequence: {sequence_name}")
                 messagebox.showinfo(
                     "Success",
-                    f"Test sequence '{sequence_name}' saved successfully!\n\n"
+                    f"Test sequence '{sequence_name}' {operation_text} successfully!\n\n"
                     f"Stages: {len(self.stages)}\n"
                     f"PCB Type: {pcb_type}"
                 )
 
-                # Clear form after successful save
+                # Clear form and exit edit mode after successful save/update
                 self.sequence_name_entry.delete(0, 'end')
                 self.pcb_type_entry.delete(0, 'end')
                 self.stages = []
                 self.update_stages_list()
+                self.exit_edit_mode()
                 self.load_sequences()
             else:
-                logger.error(f"Failed to save test sequence: {sequence_name}")
-                messagebox.showerror("Error", "Failed to save sequence. Please check the logs for details.")
+                logger.error(f"Failed to {operation.lower()} test sequence: {sequence_name}")
+                messagebox.showerror("Error", f"Failed to {operation.lower()} sequence. Please check the logs for details.")
 
         except Exception as e:
-            logger.error(f"Exception occurred while saving sequence '{sequence_name}': {e}")
+            logger.error(f"Exception occurred while {operation.lower()} sequence '{sequence_name}': {e}")
             # Close saving window if still open
             try:
                 saving_window.destroy()
             except:
                 pass
 
-            messagebox.showerror("Error", f"An error occurred while saving:\n{str(e)}")
+            messagebox.showerror("Error", f"An error occurred while {operation.lower()}:\n{str(e)}")
             print(f"Save sequence error: {e}")
     
     def load_sequences(self):
@@ -420,9 +444,12 @@ class StageBuilderWindow(ctk.CTkFrame):
                 font=ctk.CTkFont(size=14, weight="bold")
             ).pack(anchor="w")
             
+            # Get stage count for this sequence
+            stages_count = len(self.db.get_test_stages(seq['id']))
+
             ctk.CTkLabel(
                 info_frame,
-                text=f"PCB Type: {seq.get('description', 'N/A')} | Stages: N/A",
+                text=f"PCB Type: {seq.get('description', 'N/A')} | Stages: {stages_count}",
                 text_color="gray"
             ).pack(anchor="w")
             
@@ -436,8 +463,18 @@ class StageBuilderWindow(ctk.CTkFrame):
                 width=70,
                 command=lambda s=seq: self.view_sequence(s)
             )
-            view_btn.pack(side="left", padx=3)
-            
+            view_btn.pack(side="left", padx=2)
+
+            edit_btn = ctk.CTkButton(
+                btn_frame,
+                text="✏️ Edit",
+                width=80,
+                fg_color="#007bff",
+                hover_color="#0056b3",
+                command=lambda s=seq: self.edit_sequence(s)
+            )
+            edit_btn.pack(side="left", padx=2)
+
             delete_btn = ctk.CTkButton(
                 btn_frame,
                 text="Delete",
@@ -446,7 +483,7 @@ class StageBuilderWindow(ctk.CTkFrame):
                 hover_color="darkred",
                 command=lambda s_id=seq['id']: self.delete_sequence(s_id)
             )
-            delete_btn.pack(side="left", padx=3)
+            delete_btn.pack(side="left", padx=2)
     
     def view_sequence(self, sequence):
         """View sequence details"""
@@ -489,23 +526,44 @@ class StageBuilderWindow(ctk.CTkFrame):
         
         stages_scroll = ctk.CTkScrollableFrame(container, height=300)
         stages_scroll.pack(fill="both", expand=True, padx=10, pady=10)
-        
+
         stages = self.db.get_test_stages(sequence['id'])
-        
-        for idx, stage in enumerate(stages):
-            stage_frame = ctk.CTkFrame(stages_scroll)
-            stage_frame.pack(pady=5, padx=10, fill="x")
-            
-            stage_text = f"Stage {idx + 1}: {stage['name']}\n"
-            stage_text += f"Voltage: {stage['voltage_min']}-{stage['voltage_max']}V | "
-            stage_text += f"Current: {stage['current_min']}-{stage['current_max']}A | "
-            stage_text += f"Resistance: {stage['resistance_min']}-{stage['resistance_max']}\u03a9"
-            
+        logger.info(f"Found {len(stages)} stages for sequence {sequence['id']} ({sequence['name']})")
+
+        if not stages:
+            # Display message when no stages found
+            no_stages_frame = ctk.CTkFrame(stages_scroll)
+            no_stages_frame.pack(pady=20, padx=10, fill="x")
+
             ctk.CTkLabel(
-                stage_frame,
-                text=stage_text,
-                justify="left"
-            ).pack(padx=10, pady=10)
+                no_stages_frame,
+                text="⚠️ No stages found for this sequence",
+                font=ctk.CTkFont(size=14, weight="bold"),
+                text_color="orange"
+            ).pack(pady=20)
+
+            ctk.CTkLabel(
+                no_stages_frame,
+                text="This sequence may have been created without stages\nor there may be a database issue.",
+                font=ctk.CTkFont(size=12),
+                text_color="gray"
+            ).pack(pady=(0, 20))
+        else:
+            # Display stages
+            for idx, stage in enumerate(stages):
+                stage_frame = ctk.CTkFrame(stages_scroll)
+                stage_frame.pack(pady=5, padx=10, fill="x")
+
+                stage_text = f"Stage {idx + 1}: {stage.get('stage_name', 'Unknown Stage')}\n"
+                stage_text += f"Voltage: {stage.get('voltage_min', 0)}-{stage.get('voltage_max', 0)}V | "
+                stage_text += f"Current: {stage.get('current_min', 0)}-{stage.get('current_max', 0)}A | "
+                stage_text += f"Resistance: {stage.get('resistance_min', 0)}-{stage.get('resistance_max', 0)}Ω"
+
+                ctk.CTkLabel(
+                    stage_frame,
+                    text=stage_text,
+                    justify="left"
+                ).pack(padx=10, pady=10)
         
         close_btn = ctk.CTkButton(
             container,
@@ -514,7 +572,86 @@ class StageBuilderWindow(ctk.CTkFrame):
             command=details_window.destroy
         )
         close_btn.pack(pady=10)
-    
+
+    def edit_sequence(self, sequence):
+        """Edit an existing sequence - load data back into the form"""
+        logger.info(f"Starting edit mode for sequence: {sequence['name']} (ID: {sequence['id']})")
+
+        # Set edit mode
+        self.edit_mode = True
+        self.current_edit_sequence_id = sequence['id']
+
+        # Clear existing stages and data
+        self.stages.clear()
+        self.update_stages_list()
+
+        # Load sequence basic info
+        self.sequence_name_entry.delete(0, 'end')
+        self.sequence_name_entry.insert(0, sequence['name'])
+
+        self.pcb_type_entry.delete(0, 'end')
+        self.pcb_type_entry.insert(0, sequence.get('description', ''))
+
+        # Load stages from database
+        db_stages = self.db.get_test_stages(sequence['id'])
+        logger.info(f"Loading {len(db_stages)} stages for editing")
+
+        for stage in db_stages:
+            stage_data = {
+                'name': stage.get('stage_name', 'Unknown Stage'),
+                'voltage_min': stage.get('voltage_min', 0),
+                'voltage_max': stage.get('voltage_max', 0),
+                'current_min': stage.get('current_min', 0),
+                'current_max': stage.get('current_max', 0),
+                'resistance_min': stage.get('resistance_min', 0),
+                'resistance_max': stage.get('resistance_max', 0)
+            }
+            self.stages.append(stage_data)
+
+        # Update display
+        self.update_stages_list()
+
+        # Update save button text to indicate edit mode
+        self.update_save_button_text()
+
+        # Show confirmation
+        messagebox.showinfo(
+            "Edit Mode",
+            f"Now editing: '{sequence['name']}'\n\n"
+            f"Loaded {len(self.stages)} stages for editing.\n"
+            "Modify as needed and click 'Update Test Sequence' to save changes."
+        )
+
+        logger.info(f"Edit mode activated for sequence {sequence['id']} with {len(self.stages)} stages")
+
+    def update_save_button_text(self):
+        """Update save button text based on edit mode"""
+        def find_save_button(widget):
+            if isinstance(widget, ctk.CTkButton):
+                text = widget.cget("text")
+                if "Save Test Sequence" in text or "Update Test Sequence" in text:
+                    if self.edit_mode:
+                        widget.configure(text="📝 Update Test Sequence")
+                    else:
+                        widget.configure(text="💾 Save Test Sequence")
+                    return True
+
+            # Recursively search in child widgets
+            if hasattr(widget, 'winfo_children'):
+                for child in widget.winfo_children():
+                    if find_save_button(child):
+                        return True
+            return False
+
+        find_save_button(self)
+
+    def exit_edit_mode(self):
+        """Exit edit mode and reset to create mode"""
+        self.edit_mode = False
+        self.current_edit_sequence_id = None
+        self.update_save_button_text()
+        logger.info("Exited edit mode")
+
     def delete_sequence(self, seq_id):
         """Delete a test sequence"""
         logger.info(f"Attempting to delete sequence with ID: {seq_id}")

@@ -3,3 +3,6 @@ Pillow>=10.2.0
 bcrypt>=4.1.2
 pyserial>=3.5
 mysql-connector-python>=8.2.0
+fastapi>=0.110.0
+uvicorn>=0.29.0
+pydantic>=2.7.0

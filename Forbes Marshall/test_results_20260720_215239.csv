@@ -1,0 +1,2 @@
+id,test_case_id,user_id,pcb_serial_number,status,overall_pass,start_time,end_time,notes,created_at
+18,6,3,API-TEST-001,In Progress,,2026-07-20 21:52:39,,,2026-07-20 21:52:39
